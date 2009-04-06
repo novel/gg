@@ -1,0 +1,87 @@
+#!/usr/bin/env python
+
+"""Tool to obtain info about IP addresses on GoGrid
+
+Examples:
+
+    * List all avaiable ips:
+        ./gg-ip
+
+    * List only public ips (pu stands for public, pr stands for private):
+       ./gg-ip -t pu
+
+    * Make output more verbose, i.e. show id, subnet mask and private/public info:
+       ./gg-ip -v -t pu
+
+    * List unassigned (i.e. not used by running servers) public ips:
+       ./gg-ip -t pu -s u 
+
+In the previous example u states for unassigned, a states for assigned, I guess you got it
+"""
+
+import sys
+import getopt
+
+from GoGridManager import GoGridManager
+from GoGridClient import Error403
+
+if __name__ == "__main__":
+    verbose = False
+    state = None
+    type = "all"
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "s:t:v")
+    except getopt.GetoptError, err:
+        print str(err)
+        sys.exit(2)
+
+    for o, a in opts:
+        if o == "-v":
+            verbose = True
+        elif o == "-t":
+            type = a
+        elif o == "-s":
+            state = a
+
+    if type[0:2] not in ["al", "pu", "pr"]:
+       print "Type should be one of: al(l) pu(blic) pr(ivate)"
+       sys.exit(2)
+
+    if state is not None:
+        if state[0] not in ['u', 'a']:
+            print "State should be one of: u(nassigned), a(ssigned)"
+            sys.exit(2)
+
+    manager = GoGridManager()
+
+    try:
+        if type.startswith("pu"):
+            type_arg = "Public"
+        elif type.startswith("pr"):
+            type_arg = "Private"
+        else:
+            type_arg = "all"
+
+        if state is not None:
+            if state.startswith("u"):
+                state_arg = "Unassigned"
+            elif state.startswith("a"):
+                state_arg = "Assigned"
+            else:
+                state_arg = None
+        else:
+            state_arg = None
+        
+        ips = manager.get_ips(type=type_arg, state=state_arg)
+       
+    except (Error403,), e:
+        print e
+        sys.exit(1)
+
+    if verbose:
+        for ip in ips:        
+            print ip
+    else:
+        for ip in ips:
+            print ip.ip

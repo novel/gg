@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+
+"""A script to add a new server
+
+Example:
+
+    ./gg-server-add -n somename -i centos51_64_apache -r 512MB -a som.e.add.r
+    
+
+"""
+
+import sys
+import getopt
+from GoGridManager import GoGridManager
+
+def usage():
+    print "%s -n name -i image -r ram -a ip_addr [ -d descr ]" % sys.argv[0]
+    print
+
+if __name__ == "__main__":
+    name = image = ram = ip = descr = None
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "n:i:r:a:d:")
+    except getopt.GetoptError, err:
+        print str(err)
+        sys.exit(2)
+    
+    for o, a in opts:
+        if o == "-n":
+            name = a
+        elif o == "-i":
+            image = a
+        elif o == "-r":
+            ram = a
+        elif o == "-a":
+            ip = a
+        elif o == "-d":
+            descr = a
+
+    if (name and image and ram and ip) is None:
+        usage()
+        sys.exit(2)
+
+    manager = GoGridManager()
+    server = manager.add_server(name, image, ram, ip, descr)
+    print server

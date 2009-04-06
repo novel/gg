@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+"""A tool to list currently available servers.
+
+Example:
+
+    ./gg-server-list 
+
+Yeah, that' simple"""
+
+import sys
+
+from GoGridManager import GoGridManager
+from GoGridClient import Error403
+
+if __name__ == "__main__":
+    manager = GoGridManager()
+
+    try:
+        servers = manager.get_servers()
+    except (Error403,), e:
+        print e
+        sys.exit(2)
+
+    for server in servers:
+        print server
+
+
