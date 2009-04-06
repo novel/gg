@@ -1,0 +1,11 @@
+Easy to use tools to manage your GoGrid servers. Works both
+with Python and Jython, don't need any non-standard modules.
+
+To start it you have to create a config file with the only one line
+in it:
+
+api_key:secret
+
+It's an API Key and secret separated by ":". 
+
+Almost every script has a brief description how to use it in its header.
