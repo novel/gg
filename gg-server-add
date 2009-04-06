@@ -5,12 +5,14 @@
 Example:
 
     ./gg-server-add -n somename -i centos51_64_apache -r 512MB -a som.e.add.r
-    
-
+   
+You can omit IP address of the machine (i.e. don't specify -a) and it will pick
+on of the available public IPs in state Unassigned.
 """
 
 import sys
 import getopt
+from random import choice
 from GoGridManager import GoGridManager
 
 def usage():
@@ -38,10 +40,14 @@ if __name__ == "__main__":
         elif o == "-d":
             descr = a
 
+    manager = GoGridManager()
+
+    if ip is None:
+        ip = choice(manager.get_ips(type='Public', state='Unassigned')).ip
+
     if (name and image and ram and ip) is None:
         usage()
         sys.exit(2)
 
-    manager = GoGridManager()
     server = manager.add_server(name, image, ram, ip, descr)
-    print server
+    print "%s %s" % (server.name, server.ip.ip)
