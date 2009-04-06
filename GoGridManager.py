@@ -129,6 +129,21 @@ class GoGridManager:
         del response[0:2]
 
         return GGServer(response[0].split(","))
+
+    def delete_server(self, id, name):
+        if id is not None:
+            param_dict = {'id': id}
+        else:
+            param_dict = {'name': name} 
+
+        # XXX to raise an exception if both fields are None
+        
+        response = self.gogrid_client.sendAPIRequest("grid/server/delete", param_dict).splitlines()
+
+        del response[0:2]
+
+        return GGServer(response[0].split(","))
+    
 ######################
 ######################
     def get_free_public_ips(self):
