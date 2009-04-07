@@ -1,4 +1,4 @@
-Easy to use tools to manage your GoGrid servers. Works both
+Easy to use tools to manage your GoGrid servers. Work both
 with Python and Jython, don't need any non-standard modules.
 
 To start it you have to create a config file ~/.ggrc with the 
