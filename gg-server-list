@@ -4,16 +4,31 @@
 
 Example:
 
-    ./gg-server-list 
+    ./gg-server-list <-- shows a list of servers
+     
+    ./gg-server-list -H <-- shows a list of servers and appends header to the output
 
 Yeah, that' simple"""
 
 import sys
+import getopt
 
 from GoGridManager import GoGridManager
 from GoGridClient import Error403
 
 if __name__ == "__main__":
+    show_headers = False
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "H")
+    except getopt.GetoptError, err:
+        print str(err)
+        sys.exit(2)
+
+    for o, a in opts:
+        if o == "-H":
+            show_headers = True
+
     manager = GoGridManager()
 
     try:
@@ -22,7 +37,8 @@ if __name__ == "__main__":
         print e
         sys.exit(2)
 
-    print "%6s %12s %20s %10s" % ("id", "name", "ip", "state")
+    if show_headers:
+        print "%6s %12s %20s %10s" % ("id", "name", "ip", "state")
+
     for server in servers:
-        #print server
         print "%6s %12s %20s %10s" % (server.id, server.name, server.ip.ip, server.state)
