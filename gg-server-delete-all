@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Shortcut command to delete all servers
+
+gg_home=`pwd`
+
+for id in `${gg_home}/gg-server-list|awk '{print $1}'|xargs`; do
+	${gg_home}/gg-server-delete -i $id
+done
