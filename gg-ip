@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     if verbose:
         for ip in ips:        
-            print ip
+            print "%s %s %s" % (ip.id, ip.ip, ip.subnet)
     else:
         for ip in ips:
             print ip.ip
