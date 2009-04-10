@@ -10,3 +10,9 @@ It's an API Key and secret separated by ":".
 
 Almost every script has a meaningful (I hope) name and a 
 brief description how to use it in its header.
+
+Notes:
+
+- It's ok to ignore warnings about deprecated md5 module if you
+  are using python 2.6 or newer. md5 kept for the sake of making
+  scripts workable with jython 
