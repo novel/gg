@@ -143,7 +143,21 @@ class GoGridManager:
         del response[0:2]
 
         return GGServer(response[0].split(","))
-    
+
+
+    def power_server(self, id, name, action):
+        if id is not None:
+            param_dict = {"id": id}
+        else:
+            param_dict = {"name": name}
+
+        param_dict["power"] = action
+
+        response = self.gogrid_client.sendAPIRequest("grid/server/power", param_dict).splitlines()
+
+        del response[0:2]
+
+        return GGServer(response[0].split(","))
 ######################
 ######################
     def get_free_public_ips(self):

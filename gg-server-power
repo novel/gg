@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+
+"""
+Tool to power server. Typical usage would be:
+
+    ./gg-server-power -i 123 cycle
+    
+    or:
+
+    ./gg-server-power -n my_server on
+"""
+
+import sys
+import getopt
+from GoGridManager import GoGridManager
+
+valid_actions = ["on", "off", "cycle"]
+
+def usage():
+    print "%s [-i id|-n name] [%s]" % (sys.argv[0], "|".join(valid_actions))
+
+if __name__ == "__main__":
+    id = name = None
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "i:n:")
+    except getopt.GetoptError, err:
+        print str(err)
+        sys.exit(2)
+
+    for o, a in opts:
+        if o == "-i":
+            id = a
+        elif o == "-n":
+            name = a
+
+    if (name is None and id is None):
+        print "You should specifiy either id or name!"
+        sys.exit(1)
+
+    manager = GoGridManager()        
+
+    if len(args) != 1:
+        usage()
+        sys.exit(2)
+
+    action = args[0]
+
+    if action not in valid_actions:
+        usage()
+        sys.exit(2)
+
+    server = manager.power_server(id=id, name=name, action=action)
+    print "%s %s" % (server.name, server.ip.ip)
