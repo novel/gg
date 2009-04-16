@@ -4,6 +4,7 @@ import md5
 import time
 import urllib
 import os.path
+import sys
 
 # define exceptions
 class Error403(Exception): pass
@@ -51,6 +52,10 @@ class GoGridClient:
 
     if "403 Not Authorized" in result:
         raise Error403, "Authorization error, check credentials and your time settings."
+
+    if "FAILURE" in result:
+        print result.splitlines()[2].replace(",", ": ")
+        sys.exit(1)
 
     return result
 
