@@ -11,6 +11,11 @@ It's an API Key and secret separated by ":".
 Almost every script has a meaningful (I hope) name and a 
 brief description how to use it in its header.
 
+gg comes with the setup.py, so if you want to globally install it,
+the following command should be executed:
+
+	sudo python setup.py install
+
 Notes:
 
 - It's ok to ignore warnings about deprecated md5 module if you
