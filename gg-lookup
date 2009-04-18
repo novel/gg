@@ -8,6 +8,6 @@
 #    ./gg-lookup lookups <-- lists all the lookup variables
 #
 
-gg_home=`pwd`
+gg_home=`dirname $0`
 
 ${gg_home}/gg-raw "/common/lookup/list" "lookup=$1"
