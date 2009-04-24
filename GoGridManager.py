@@ -158,6 +158,16 @@ class GoGridManager:
         del response[0:2]
 
         return GGServer(response[0].split(","))
+
+    def get_billing(self):
+        response = self.gogrid_client.sendAPIRequest("myaccount/billing/get", {}).splitlines()
+
+        del response[0]
+        keys = response[0][2:].split(",")
+        values = response[1].split(",")
+
+        return dict(zip(keys, values))
+
 ######################
 ######################
     def get_free_public_ips(self):

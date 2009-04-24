@@ -1,0 +1,10 @@
+#!/usr/bin/env python
+
+from GoGridManager import GoGridManager
+
+if __name__ == "__main__":
+    manager = GoGridManager()
+
+    billing = manager.get_billing()
+    for k,v in billing.iteritems():
+        print "%s: %s" % (k, v)
