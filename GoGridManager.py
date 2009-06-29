@@ -66,10 +66,10 @@ class GGPassword:
         return "%s:%s@%s (id = %s)" % (self.username, self.password, self.server.ip.ip, self.id)
 
 class GoGridManager:
+    """The main class to accessing GoGrid API methods."""
 
-    def __init__(self):
-        self.gogrid_client = GoGridClient()
-
+    def __init__(self, key='', secret=''):
+        self.gogrid_client = GoGridClient(key, secret)
 
     def find_image_by_name(self, name):
         for image in self.get_image_list():

@@ -10,20 +10,23 @@ import sys
 class Error403(Exception): pass
 
 class GoGridClient:
-  """sample gogrid api client"""
+  """gogrid api client"""
   default_params = {'format':'csv', 'v':'1.0'}
   server = 'https://api.gogrid.com/api'
+  api_key = None
+  secret = None
   
-  def __init__(self,server='',key='',secret=''):
-    if server != "":
-        self.server = server
+  def __init__(self, key='', secret=''):
     if key != "":
         self.api_key = key
     if secret != "":
         self.secret = secret
-
-    fd = open(os.path.expanduser("~/.ggrc"), 'r')
-    self.api_key, self.secret = fd.readlines()[0].split(":")
+    
+    # if the options weren't given via constructor, try
+    # to read them from file
+    if self.api_key is None or self.secret is None:
+        fd = open(os.path.expanduser("~/.ggrc"), 'r')
+        self.api_key, self.secret = fd.readlines()[0].split(":")
 
     self.default_params['api_key'] = self.api_key.strip()
     self.default_params['secret'] = self.secret.strip()
