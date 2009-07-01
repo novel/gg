@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 
-from random import choice
-from GoGridClient import GoGridClient
 
-__author__ = "Roman Bogorodskiy"
-
-"""GoGridManager is a Python module which implements an interface to the GoGrid API.
+"""
+GoGridManager is a Python module which implements an interface to the GoGrid API.
 It uses CSV mode and therefore doesn't need external libs (that would be needed if it used
 json) and the code is compact (it would be hard to keep it as small as now if it used xml).
 The module has been tested with CPython 2.5 and CPython 2.6 and works fine. Jython should
@@ -17,7 +14,14 @@ have to servers with the same name, however numeric id is always unique. But in 
 you are sure that you don't use same names for your servers, it might be more convenient to search
 servers by name. You will notice that some methods accepts both id and name, however type for id is
 string. Don't get confused: type is string to avoid non-needed type conversion, as id is stored as
-string in CSV, like all other fields as well."""
+string in CSV, like all other fields as well.
+
+@author: Roman Bogorodskiy
+@contact: bogorodskiy@gmail.com
+"""
+
+from random import choice
+from GoGridClient import GoGridClient
 
 class GGIp:
     """
