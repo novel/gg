@@ -2,15 +2,62 @@
 
 from random import choice
 from GoGridClient import GoGridClient
-#import paramiko
 
 class GGIp:
+    """
+    Class representing IP addresses. In GoGrid API, IP address can be generally used in a two ways:
+
+        1. As an address attached to the server
+
+        2. As an item of the address pool
+
+    IP addresses are of two types:
+
+        1. Private
+
+        2. Public
+
+    Private addresses are used for connecting to cloud storage (as it's not available from the world)
+    and for internal connections between GoGrid servers and ServePath servers for example. You cannot
+    create GoGrid servers with the private IP.
+
+    Public IPs are just IPs assigned to the servers when they're getting created.
+    
+    @author: Roman Bogorodskiy
+    @contact: bogorodskiy@gmail.com
+    """
 
     def __init__(self, tokens):
+        """
+        Constructor.
+
+        @type tokens: string
+        @param tokens: comma-separated list of items as recieved from GoGrid API response
+
+        @note: you most likely don't want to construct GGIp objects yourself, normally they will
+        be returned by various methods from L{GoGridManager<GoGridManager>}.
+        """
+
         self.id = tokens[0]
+        """
+        @ivar: internal id of the IP address
+        @type: string
+        """
         self.ip = tokens[1]
+        """
+        @ivar: actuall IP address in dot-decimal notation (192.168.0.1 for example)
+        @type: string
+        """
         self.subnet = tokens[2]
+        """
+        @ivar: subnet given IP address belongs to
+        @type: string
+        """
         self.public = (tokens[3] == "true")
+        """
+        @ivar: true if the address is public, false in case if it's from private network
+        @type: boolean
+        """
 
     #def __init__(self, id, ip, subnet, public):
     #    self.id = id
@@ -22,8 +69,19 @@ class GGIp:
         return "ip = %s (id = %s, subnet = %s, public: %s)" % (self.ip, self.id, self.subnet, self.public)
 
 class GGServer:
+   """Class representing GoGrid server instance."""
     
     def __init__(self, tokens):
+        """
+        Constructor.
+
+        @type tokens: string
+        @param tokens: comma-separated list of items as recieved from GoGrid API response
+        
+        @note: you most likely don't want to construct GGIp objects yourself, normally they will
+        be returned by various methods from L{GoGridManager<GoGridManager>}.
+        """
+        
         self.id = tokens[0]
         self.name = tokens[1]
         self.descr = tokens[2]
@@ -79,7 +137,18 @@ class GoGridManager:
 ######################
 ######################
 
-    def get_ips(self, type="all", state=None):       
+    def get_ips(self, type="all", state=None):
+        """
+        Returns a list of IPs available for the current account.
+
+        @type type: string
+        @param type: A type of the IP address. Can be "Public", "Private" and "All" which means both private and public are OK
+        @type state: string
+        @param state: A state of the IP, can be one of "Assigned" or "Unassigned". By default returns all IPs
+        @rtype: list
+        @return: a list of L{GGIp<GGIp>} objects matching the query
+        """
+
         param_dict = {}
 
         if type != "all":
@@ -96,6 +165,13 @@ class GoGridManager:
         return map(lambda item: GGIp(item.split(",")), data)
 
     def get_servers(self):
+        """
+        Returns a list of servers currently deployed
+
+        @rtype: list
+        @return: a list of L{GGServer<GGServer>} objects representing currently running servers
+        """
+
         param_dict = {} 
 
         data = self.gogrid_client.sendAPIRequest("grid/server/list", param_dict)
@@ -106,19 +182,48 @@ class GoGridManager:
         return map(lambda item: GGServer(item.split(",")), data)
 
     def get_images(self):
-        """Returns a list of available server images"""
+        """
+        Returns a list of available server images (i.e. Operating System templates)
+        
+        @rtype: list
+        @return: a list of L{GGImage<GGImage>} objects representing currently available OS templates
+        """
         data = self.gogrid_client.sendAPIRequest("grid/image/list", {}).splitlines()
 
         del data[0:2]
         return map(lambda item: GGImage(item.split(",")), data)
 
     def get_passwords(self):
+        """
+        Returns a list of passwords for the currently running servers
+
+        @rtype: list
+        @return: a list of L{GGPassword<GGPassword>} objects containing passwords for the currently running servers
+        """
         data = self.gogrid_client.sendAPIRequest("support/password/list", {}).splitlines()
 
         del data[0:2]
         return map(lambda item: GGPassword(item.split(",")), data)
 
     def add_server(self, name, image, ram, ip, descr=None):
+        """
+        A method to add a new server.
+
+        @type name: string
+        @param name: desired name of the newely created server
+        @type image: string
+        @param image: image to be used for the server. You can use either symbolic name or numeric image id, but even
+        if you specify image by id, it should still be string
+        @type ram: string
+        @param ram: desired amount of RAM for the server
+        @type ip: string
+        @param ip: IP address to be assigned to the server. Remember that you have to specify public IP address, private address will not work here
+        @type descr: string
+        @param descr: optional literal description of the server, may be omitted
+        @rtype: L{GGServer<GGServer>}
+        @return: a L{GGServer<GGServer>} object representing newely created server
+        """
+
         param_dict = {"name": name, "image": image, "ram": ram, "ip": ip}
 
         if descr is not None:
@@ -131,6 +236,18 @@ class GoGridManager:
         return GGServer(response[0].split(","))
 
     def delete_server(self, id, name):
+        """
+        A method to remove server. It can delete server both by id and name and access both
+        these parameters. Be sure to specify at least one of them. If you specify _both_, id
+        will be preferred.
+
+        @type id: integer
+        @param id: numeric id of the server to remove
+        @type name: string
+        @param name: literal name of the server to remove
+        @rtype: L{GGServer<GGServer>}
+        @return: a L{GGServer<GGServer>} object corresponding to the deleted server
+        """
         if id is not None:
             param_dict = {'id': id}
         else:
@@ -160,6 +277,12 @@ class GoGridManager:
         return GGServer(response[0].split(","))
 
     def get_billing(self):
+        """
+        A method that returns account billing information
+
+        @rtype: dict
+        @return: dict with various billing information
+        """
         response = self.gogrid_client.sendAPIRequest("myaccount/billing/get", {}).splitlines()
 
         del response[0]
@@ -171,7 +294,9 @@ class GoGridManager:
 ######################
 ######################
     def get_free_public_ips(self):
-        """Returns a list of currenty available public ips"""
+        """
+        Returns a list of currenty available public ips
+        """
 
         data = self.gogrid_client.sendAPIRequest("grid/ip/list", 
                 {"format": "csv", "ip.state": "Unassigned",
