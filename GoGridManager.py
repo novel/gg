@@ -5,6 +5,20 @@ from GoGridClient import GoGridClient
 
 __author__ = "Roman Bogorodskiy"
 
+"""GoGridManager is a Python module which implements an interface to the GoGrid API.
+It uses CSV mode and therefore doesn't need external libs (that would be needed if it used
+json) and the code is compact (it would be hard to keep it as small as now if it used xml).
+The module has been tested with CPython 2.5 and CPython 2.6 and works fine. Jython should
+work too, but it wasn't tested as frequently as CPython.
+
+@note: Small comment on the datatypes. As you probably know already, GoGrid server
+can be identified by either numeric id of it's name. Actually, __actually__, it is possible to
+have to servers with the same name, however numeric id is always unique. But in most of cases if
+you are sure that you don't use same names for your servers, it might be more convenient to search
+servers by name. You will notice that some methods accepts both id and name, however type for id is
+string. Don't get confused: type is string to avoid non-needed type conversion, as id is stored as
+string in CSV, like all other fields as well."""
+
 class GGIp:
     """
     Class representing IP addresses. In GoGrid API, IP address can be generally used in a two ways:
@@ -143,12 +157,29 @@ class GGImage:
         return "image %s (id = %s)" % (self.name, self.id)
 
 class GGPassword:
+    "Class representing password instance."
 
     def __init__(self, tokens):
         self.id = tokens[0]
+        """
+        @ivar: internal numeric id of the password object
+        @type: string
+        """
         self.server = GGServer(tokens[1:])
+        """
+        @ivar: points to the corresponding L{GGServer<GGServer>} object
+        @type: L{GGServer<GGServer>}
+        """
         self.username = tokens[30]
+        """
+        @ivar: username
+        @type: string
+        """
         self.password = tokens[31]
+        """
+        @ivar: password
+        @type: string
+        """
 
     def __str__(self):
         return "%s:%s@%s (id = %s)" % (self.username, self.password, self.server.ip.ip, self.id)
@@ -424,26 +455,3 @@ class GoGridManager:
 
         del data[0:2]
         return map(lambda item: item.split(","), data)
-
-    #def bootstrap_server(self, ip):
-        #print "bootstraping server with ip = %s" % ip
-
-        #login, password = self.get_password_by_ip(ip)
-
-        #print "%s: login = %s, password = %s" % (ip, login, password)
-
-        #t = paramiko.Transport((ip, 22))
-        #t.connect(username=login, password=password)
-
-        #commands = [ 'useradd guest', 'echo guest | passwd --stdin guest' ]
-
-        #for command in commands:
-            #chan = t.open_session()
-            #chan.exec_command(command)
-            #chan.close()
-
-        #t.close()
-     
-
-
-
