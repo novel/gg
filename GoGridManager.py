@@ -305,6 +305,25 @@ class GoGridManager:
 
 
     def power_server(self, id, name, action):
+        """A method to start/stop/reboot server.
+
+        You can identify server by either id or name. So you have to specify at least one of these params.
+        If you specify both, id would be prefered.
+
+        @param id: numeric id of the server
+        @type id: string
+        @param name: liternal name of the server
+        @type name: string
+        @param action: name of the operation to perform on the server. Possible operations are:
+
+            1. "on" - power server on
+            2. "off" - turns server off (not gracefully)
+            3. "restart" - reboots server
+        @type action: string
+        
+        @rtype: L{GGServer<GGServer>}
+        @return: a L{GGServer<GGServer>} object representing a server operation was pefrormed on
+        """
         if id is not None:
             param_dict = {"id": id}
         else:
