@@ -3,6 +3,8 @@
 from random import choice
 from GoGridClient import GoGridClient
 
+__author__ = "Roman Bogorodskiy"
+
 class GGIp:
     """
     Class representing IP addresses. In GoGrid API, IP address can be generally used in a two ways:
@@ -69,7 +71,10 @@ class GGIp:
         return "ip = %s (id = %s, subnet = %s, public: %s)" % (self.ip, self.id, self.subnet, self.public)
 
 class GGServer:
-   """Class representing GoGrid server instance."""
+    """Class representing GoGrid server instance.
+    
+    @author: Roman Bogorodskiy
+    @contact: bogorodskiy@gmail.com"""
     
     def __init__(self, tokens):
         """
@@ -78,15 +83,40 @@ class GGServer:
         @type tokens: string
         @param tokens: comma-separated list of items as recieved from GoGrid API response
         
-        @note: you most likely don't want to construct GGIp objects yourself, normally they will
+        @note: you most likely don't want to construct GGServer objects yourself, normally they will
         be returned by various methods from L{GoGridManager<GoGridManager>}.
         """
         
         self.id = tokens[0]
+        """
+        @ivar: id of the server
+        @type: string
+        """
         self.name = tokens[1]
+        """
+        @ivar: name of the server
+        @type: string
+        """
         self.descr = tokens[2]
+        """
+        @ivar: user's description of the server, might be blank
+        @type: string
+        """
         self.ip = GGIp([tokens[3], tokens[4], tokens[5], tokens[6]])
+        """
+        @ivar: address information for the server
+        @type: L{GGIp<GGIp>}
+        """
         self.state = tokens[20]
+        """
+        @ivar: name of the current server state. 
+
+        You can get a list of possible values using gg-lookup tool::
+
+            gg-lookup server.state
+
+        @type: string
+        """ 
 
     def __str__(self):
         return "server %s (id = %s, descr = %s, state = %s, ip = %s)" % (self.name, 
@@ -124,12 +154,24 @@ class GGPassword:
         return "%s:%s@%s (id = %s)" % (self.username, self.password, self.server.ip.ip, self.id)
 
 class GoGridManager:
-    """The main class to accessing GoGrid API methods."""
+    """The main class to accessing GoGrid API methods.
+    
+    @author: Roman Bogorodskiy
+    @contact: bogorodskiy@gmail.com"""
 
     def __init__(self, key='', secret=''):
+        """Constructor.
+
+        key and secret params are optional. If you will specify both of them, GoGridManager
+        will use these credentials to use GoGrid API. If at least one of the params will be
+        missing, it will try to use configuration file. Configuration file is located
+        at ~/.ggrc and contains only one line of the format: "api_key:secret". You can get more
+        details on obtaining GoGrid API key at the GoGrid wiki.
+        """
         self.gogrid_client = GoGridClient(key, secret)
 
     def find_image_by_name(self, name):
+        """@deprecated: not elegant, use filter on the get_images()"""
         for image in self.get_image_list():
             if name == image[1]:
                 return image
