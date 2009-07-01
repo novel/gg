@@ -89,11 +89,10 @@ class GGIp:
         return "ip = %s (id = %s, subnet = %s, public: %s)" % (self.ip, self.id, self.subnet, self.public)
 
 class GGServer:
-    """Class representing GoGrid server instance.
-    
-    @author: Roman Bogorodskiy
-    @contact: bogorodskiy@gmail.com"""
-    
+    """
+    Class representing GoGrid server instance.
+    """
+
     def __init__(self, tokens):
         """
         Constructor.
@@ -141,18 +140,67 @@ class GGServer:
                 self.id, self.descr, self.state, self.ip.ip)
 
 class GGImage:
+    """
+    Class representing GoGrid images. Images are generally various OS temples, e.g. centos5x with Apache, centos5x
+    with PostgreSQL, etc
+    """
 
     def __init__(self, tokens):
+        """
+        Constructor.
+
+        @type tokens: string
+        @param tokens: comma-separated list of items as recieved from GoGrid API response
+
+        @note: you most likely don't want to construct GGImage objects yourself, normally they will
+        be returned by various methods from L{GoGridManager<GoGridManager>}.
+        """
         if len(tokens) == 9:
             self.id = tokens[0]
+            """
+            @ivar: internal id of the image
+            @type: string
+            """
             self.name = tokens[1]
+            """
+            @ivar: name of the image
+            @type: string
+            """
             self.friendlyName = tokens[2]
+            """
+            @ivar: friendly name of the image
+            @type: string
+            """
             self.descr = tokens[3]
+            """
+            @ivar: long descriptive name of the image
+            @type: string
+            """
             self.location = tokens[4]
+            """
+            @ivar: location of the image
+            @type: string
+            """
             self.isActive = (tokens[5] == "true")
+            """
+            @ivar: true if image is active, false otherwise
+            @type: boolean
+            """
             self.isPublic = (tokens[6] == "true")
+            """
+            @ivar: true if image is active, false otherwise
+            @type: boolean
+            """
             self.createdTime = tokens[7]
+            """
+            @ivar: creation time of an image
+            @type: string
+            """
             self.updatedTime = tokens[8]
+            """
+            @ivar: update time of an image
+            @type: string
+            """
         else:
             self.id = tokens[0]
             self.name = tokens[1]
@@ -189,10 +237,9 @@ class GGPassword:
         return "%s:%s@%s (id = %s)" % (self.username, self.password, self.server.ip.ip, self.id)
 
 class GoGridManager:
-    """The main class to accessing GoGrid API methods.
-    
-    @author: Roman Bogorodskiy
-    @contact: bogorodskiy@gmail.com"""
+    """
+    The main class to accessing GoGrid API methods.
+    """
 
     def __init__(self, key='', secret=''):
         """Constructor.
