@@ -103,7 +103,6 @@ class GGServer:
         @note: you most likely don't want to construct GGServer objects yourself, normally they will
         be returned by various methods from L{GoGridManager<GoGridManager>}.
         """
-        
         self.id = tokens[0]
         """
         @ivar: id of the server
@@ -217,17 +216,17 @@ class GGPassword:
         @ivar: internal numeric id of the password object
         @type: string
         """
-        self.server = GGServer(tokens[1:])
+        self.server = GGServer(tokens[2:])
         """
         @ivar: points to the corresponding L{GGServer<GGServer>} object
         @type: L{GGServer<GGServer>}
         """
-        self.username = tokens[30]
+        self.username = tokens[31]
         """
         @ivar: username
         @type: string
         """
-        self.password = tokens[31]
+        self.password = tokens[32]
         """
         @ivar: password
         @type: string
