@@ -13,6 +13,7 @@ Examples:
 import sys
 import getopt
 from GoGridManager import GoGridManager
+from GoGridClient import GoGridException
 
 if __name__ == "__main__":
     id = name = None
@@ -35,5 +36,10 @@ if __name__ == "__main__":
 
     manager = GoGridManager()        
 
-    server = manager.delete_server(id=id, name=name)
-    print "%s %s" % (server.name, server.ip.ip)
+    try: 
+        server = manager.delete_server(id=id, name=name)
+        print "%s %s" % (server.name, server.ip.ip)
+    except GoGridException as e:
+        print e
+        sys.exit(1)
+

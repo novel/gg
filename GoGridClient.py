@@ -8,6 +8,7 @@ import sys
 
 # define exceptions
 class Error403(Exception): pass
+class GoGridException(Exception): pass
 
 class GoGridClient:
   """gogrid api client"""
@@ -57,8 +58,7 @@ class GoGridClient:
         raise Error403, "Authorization error, check credentials and your time settings."
 
     if "FAILURE" in result:
-        print result.splitlines()[2].replace(",", ": ")
-        sys.exit(1)
+        raise GoGridException(result.splitlines()[2].replace(",", ": "))
 
     return result
 
