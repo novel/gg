@@ -1,0 +1,119 @@
+<html>
+  <head>
+    <title>GG Tools<title>
+  </head>
+  <body>
+    <h1>gg-tools</h1>
+    <hr/>
+    <p>gg-tools is a set of CLI (command line interface) tools 
+      to control <a href="http://gogrid.com">GoGrid</a> cloud.
+      It also provides a <a href="http://python.org">Python</a>
+      module with the interface to the GoGrid 
+      <a href="http://wiki.gogrid.com/wiki/index.php/API">API</a>. It has
+      no additional dependencies but Python itself and should work with
+      both CPython and Jython.
+     </p>
+
+     <h2>download</h2>
+     <p>TODO: download link</p>
+
+     <h2>installation</h2>
+     <p>After you've downloaded and upacked gg-tools, just go into its
+       directory and execute:</p>
+
+     <code>sudo python setup.py install</code>
+
+     <p>It will install both CLI tools and Python module onto your system.</p>
+
+     <h2>configuration</h2>
+     <p>All you need to do is to obtain your 
+     <a href="http://wiki.gogrid.com/wiki/index.php/API:Anatomy_of_a_GoGrid_API_Call#API_Key">API key</a> 
+     and password and put them in a file <tt>~/.ggrc</tt> in a format <tt>api_key:password</tt>
+     (i.e. separated by &quot;:&quot;).</p>
+
+     <h2>usage</h2>
+
+     <h3>server images</h3>
+     <p>In order to get a list of available images use <tt>gg-images-list</tt> tool.
+       It doesn't require you to specify any agruments and is just as simple as that:
+     </p>
+
+     <pre>		
+	     image rhel51_64_lamp (id = 21)
+	     image rhel51_64_mysql (id = 22)
+	     image rhel51_64_postgresql (id = 23)
+	     image centos51_64_apache (id = 24)
+	     image centos51_64_php (id = 25)
+	     image centos51_64_lamp (id = 26)
+     </pre>
+
+     <p>By example of the first line: here <tt>rhel51_64_lamp</tt> is 
+     a name of the image and <tt>21</tt> is its numeric id. In all gg tools 
+     if you need specify some image, you can use both id or name, so remember id or a  name
+     of the image you're interested it.</p>
+
+     <h3>creating servers</h3>
+     <p>To create a server you can use <tt>gg-server-add</tt> tool. It accepts the following arguments:
+     <p>
+
+     <ul>
+      <li><b>-n</b> - name of the server, for example: <i>my_new_server</i>. It's a required option and
+      you cannot omit it.</li>
+      <li><b>-i</b> - image to use for the server, As you probably remember, you can use image name (for
+      example: <i>centos51_64_apache</i>) or image id (for example: <i>24</i>). This is options cannot be
+      omitted as well.</li>
+      <li><b>-r</b> - an amount of RAM for the server. Possible values are: <i>512MB</i>, <i>1GB</i>,
+       <i>2GB</i>, <i>4GB</i> and <i>8GB</i>. You, however, cannot use 8GB with some images, for example,
+       32-bit images genereally cannot have more than 2Gb of RAM.</li>
+      <li><b>-a</b> - this is an <i>optional</i> arg allows you to specify an address for a server. If you
+      omit it, <tt>gg-server-add</tt> tool will pick a random unassigned public ip. If you need
+      to specify address yourself, read further to know how to get a list of available IP addresses.</li>
+     </ul>
+
+     <h3>finding out credentials for logging on to servers</h3>
+     <p>As you've created your server, you'd most certainly like to log into it. :-) You can use
+     <tt>gg-password</tt> tool to list passwords for your servers. Typical output would look this way:
+     </p>
+
+     <pre>
+id             username             password               server
+31830                 root             foobar1         192.168.0.1
+31831                 root             barfoor1	 	192.168.0.2
+     </pre>
+
+     <ul>
+       <li><b>id</b> is an internal id of a password object. Most likely you will not need it,
+       but anyways it can be useful if you'd like to open GoGrid case for example if you'd have
+       some problems with logging in.</li>
+       <li><b>username</b> - that's quite obvious, username you should log as, usually <tt>root</tt>
+       <li><b>passowrd</b> - should be obvious as well
+       <li><b>server</b> - ip address of the server in subject
+      </ul>
+
+     <p>A typical use would be like: <tt>gg-password | grep 192.168.0.1</tt> so the <tt>grep</tt> tool
+     leaves only server you're currently interested in.</p>
+
+     <h3>dealing with IP addresses</h3>
+     <p><tt>gg-ip</tt> allows to obtain various information about IPs belonging to your account. Without
+     specifying any argutments, <tt>gg-ip</tt> just print out all the IPs available. However, it supports
+     various arguments which allow to perform some queries:</p>
+
+     <ul>
+       <li><b>-t</b> - type of the IP, can be either <i>pu</i> (for public) or <i>pr</i> (for private)</li>
+       <li><b>-s</b> - state of the IP, can be either <i>u</i> (for unassigned) or <i>a</i> (for assigned)</li>
+       <li><b>-v</b> - this key doesn't actually control search results, just makes output more versobe.</i>
+     </ul>
+
+     <p>For example, if you want to list of all free (unassigned) public IPs, you should do:</p>
+
+     <pre>gg-ip -t pu -s u</pre>
+
+     <h2>API documentation</h2>
+     <p>Python module <a href="#">Documentation</a></p>
+
+     <h2>source coude/development</h2>
+     <p>Project's github page: 
+     <a href="http://github.com/novel/gg/tree/master">http://github.com/novel/gg/tree/master</a></p>
+
+  </body>
+</html>
