@@ -1,6 +1,8 @@
 <html>
   <head>
     <title>GG Tools<title>
+    <link rel="STYLESHEET" type="text/css" href="gg.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   </head>
   <body>
     <h1>gg-tools</h1>
@@ -14,10 +16,10 @@
       both CPython and Jython.
      </p>
 
-     <h2>download</h2>
-     <p>TODO: download link</p>
+     <h2>Download</h2>
+     <p>Latest release: <a href="dist/gg-%%VERSION%%.tar.gz">%%VERSION%%</a></p>
 
-     <h2>installation</h2>
+     <h2>Installation</h2>
      <p>After you've downloaded and upacked gg-tools, just go into its
        directory and execute:</p>
 
@@ -25,15 +27,15 @@
 
      <p>It will install both CLI tools and Python module onto your system.</p>
 
-     <h2>configuration</h2>
+     <h2>Configuration</h2>
      <p>All you need to do is to obtain your 
      <a href="http://wiki.gogrid.com/wiki/index.php/API:Anatomy_of_a_GoGrid_API_Call#API_Key">API key</a> 
      and password and put them in a file <tt>~/.ggrc</tt> in a format <tt>api_key:password</tt>
      (i.e. separated by &quot;:&quot;).</p>
 
-     <h2>usage</h2>
+     <h2>Usage</h2>
 
-     <h3>server images</h3>
+     <h3>Server Images</h3>
      <p>In order to get a list of available images use <tt>gg-images-list</tt> tool.
        It doesn't require you to specify any agruments and is just as simple as that:
      </p>
@@ -52,7 +54,7 @@
      if you need specify some image, you can use both id or name, so remember id or a  name
      of the image you're interested it.</p>
 
-     <h3>creating servers</h3>
+     <h3>Creating Servers</h3>
      <p>To create a server you can use <tt>gg-server-add</tt> tool. It accepts the following arguments:
      <p>
 
@@ -70,7 +72,7 @@
       to specify address yourself, read further to know how to get a list of available IP addresses.</li>
      </ul>
 
-     <h3>finding out credentials for logging on to servers</h3>
+     <h3>Finding Out Credentials For Logging On To Servers</h3>
      <p>As you've created your server, you'd most certainly like to log into it. :-) You can use
      <tt>gg-password</tt> tool to list passwords for your servers. Typical output would look this way:
      </p>
@@ -93,7 +95,7 @@ id             username             password               server
      <p>A typical use would be like: <tt>gg-password | grep 192.168.0.1</tt> so the <tt>grep</tt> tool
      leaves only server you're currently interested in.</p>
 
-     <h3>dealing with IP addresses</h3>
+     <h3>Dealing With IP Addresses</h3>
      <p><tt>gg-ip</tt> allows to obtain various information about IPs belonging to your account. Without
      specifying any argutments, <tt>gg-ip</tt> just print out all the IPs available. However, it supports
      various arguments which allow to perform some queries:</p>
@@ -108,10 +110,10 @@ id             username             password               server
 
      <pre>gg-ip -t pu -s u</pre>
 
-     <h2>API documentation</h2>
-     <p>Python module <a href="#">Documentation</a></p>
+     <h2>API Documentation</h2>
+     <p>Python module <a href="docs/%%VERSION%%/">Documentation</a></p>
 
-     <h2>source coude/development</h2>
+     <h2>Source Code/Development</h2>
      <p>Project's github page: 
      <a href="http://github.com/novel/gg/tree/master">http://github.com/novel/gg/tree/master</a></p>
 

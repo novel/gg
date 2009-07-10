@@ -1,0 +1,27 @@
+pre {
+	background-color: #EEEEEE;
+	border: 1px solid #CCCCCC;
+	padding: 1ex;
+	font-family: monospace;
+	margin: 0.75em 0;
+	width: 70%;
+}
+
+h1,h2 {
+	color: #6FBE3E;
+}
+
+a:hover {
+	text-decoration: none;
+}
+a:link, a:visited {
+	color: #3399FF;
+	text-decoration: underline;
+}
+
+hr {
+	color: #6FBE3E;
+	width: 70%;
+	text-align: left;
+	margin: 0 auto 0 0;
+}
