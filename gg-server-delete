@@ -8,18 +8,35 @@ Examples:
     ./gg-server-delete -i id <-- removes server by id
 
     ./gg-server-delete -n name <-- removes server by name
+
+    ./gg-server-delete -rn regex <-- removes all the servers that match
+        'regex' regular expression
+
+    ./gg-server-delete -qrn regex <-- same as above, but without asking
+        for confirmation
 """
 
+import re
 import sys
 import getopt
 from GoGridManager import GoGridManager
 from GoGridClient import GoGridException
 
+def delete_server(manager, id, name):
+    try: 
+        server = manager.delete_server(id=id, name=name)
+        print "%s %s" % (server.name, server.ip.ip)
+    except GoGridException as e:
+        print e
+        sys.exit(1)
+
 if __name__ == "__main__":
     id = name = None
+    regexp_mode = False
+    quiet = False
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "i:n:")
+        opts, args = getopt.getopt(sys.argv[1:], "i:n:rq")
     except getopt.GetoptError, err:
         print str(err)
         sys.exit(2)
@@ -29,17 +46,45 @@ if __name__ == "__main__":
             id = a
         elif o == "-n":
             name = a
+        elif o == '-r':
+            regexp_mode = True
+        elif o == '-q':
+            quiet = True
 
-    if (name is None and id is None):
+    if name is None and id is None:
         print "You should specifiy either id or name!"
+        sys.exit(1)
+
+    if regexp_mode is True and name is None:
+        print "You can use regex mode only with names"
         sys.exit(1)
 
     manager = GoGridManager()        
 
-    try: 
-        server = manager.delete_server(id=id, name=name)
-        print "%s %s" % (server.name, server.ip.ip)
-    except GoGridException as e:
-        print e
-        sys.exit(1)
+    if not regexp_mode:
+        # if we're not in regexp mode, just delete stuff
+            delete_server(manager, id, name)
+    else:
+        # otherwise we need to get a list of all servers
+        # and test our regex againt every name
+        regex = re.compile(name)
 
+        servers = manager.get_servers()
+
+        matches = [server.name for server in servers if regex.match(server.name)]
+
+        print "List of servers matched your expression and therefore to be removed:"
+
+        for server in matches: 
+            print server
+   
+        if quiet is False:
+            answer = ''
+            while not answer in ['y', 'n']:
+                answer = raw_input("Are you sure you want to remove all these servers? (y/n): ")
+
+            if 'n' == answer:
+                sys.exit(0)
+
+        for server in matches:
+            delete_server(manager, None, server)

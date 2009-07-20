@@ -1,0 +1,5 @@
+Version 0.1.2:
+ * Add support for server deletion by regexp
+
+Version 0.1.1:
+ * Fisrt public release
