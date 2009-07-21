@@ -110,6 +110,25 @@ id             username             password               server
 
      <pre>gg-ip -t pu -s u</pre>
 
+     <h3>Removing servers</pre>
+     <p>You can remove servers using <tt>gg-server-delete</tt> tool. You can remove it by id:
+     </p>
+
+     <pre>gg-server-delete -i 12345</pre>
+
+     <p>Or you can remove it by name:</p>
+
+     <pre>gg-server-delete -n myserv</pre>
+
+     <p>And you can even remove a set of servers that match a regular expression:</p>
+
+     <pre>gg-server-delete -rn 'foobar_*'</pre>
+
+     <p>In regex mode, <tt>gg-server-delete</tt> ask confirmtion before deleting servers to
+     make sure you didn't make unexpected errors in regular expressions and don't removing
+     something that doesn't need to be removed. However, you can pass <tt>-q</tt> key if it
+     annoys you.</p>
+
      <h2>API Documentation</h2>
      <p>Python module <a href="docs/%%VERSION%%/">Documentation</a></p>
 
