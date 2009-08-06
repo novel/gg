@@ -26,8 +26,8 @@ def delete_server(manager, id, name):
     try: 
         server = manager.delete_server(id=id, name=name)
         print "%s %s" % (server.name, server.ip.ip)
-    except GoGridException as e:
-        print e
+    except GoGridException, err:
+        print str(err)
         sys.exit(1)
 
 if __name__ == "__main__":
