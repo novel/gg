@@ -123,7 +123,7 @@ class GGServer:
         @ivar: address information for the server
         @type: L{GGIp<GGIp>}
         """
-        self.state = tokens[20]
+        self.state = tokens[22]
         """
         @ivar: name of the current server state. 
 
@@ -154,48 +154,48 @@ class GGImage:
         @note: you most likely don't want to construct GGImage objects yourself, normally they will
         be returned by various methods from L{GoGridManager<GoGridManager>}.
         """
-        if len(tokens) == 9:
-            self.id = tokens[0]
+        if len(tokens) == 11:
+            self.id = tokens[2]
             """
             @ivar: internal id of the image
             @type: string
             """
-            self.name = tokens[1]
+            self.name = tokens[3]
             """
             @ivar: name of the image
             @type: string
             """
-            self.friendlyName = tokens[2]
+            self.friendlyName = tokens[4]
             """
             @ivar: friendly name of the image
             @type: string
             """
-            self.descr = tokens[3]
+            self.descr = tokens[5]
             """
             @ivar: long descriptive name of the image
             @type: string
             """
-            self.location = tokens[4]
+            self.location = tokens[6]
             """
             @ivar: location of the image
             @type: string
             """
-            self.isActive = (tokens[5] == "true")
+            self.isActive = (tokens[7] == "true")
             """
             @ivar: true if image is active, false otherwise
             @type: boolean
             """
-            self.isPublic = (tokens[6] == "true")
+            self.isPublic = (tokens[8] == "true")
             """
             @ivar: true if image is active, false otherwise
             @type: boolean
             """
-            self.createdTime = tokens[7]
+            self.createdTime = tokens[9]
             """
             @ivar: creation time of an image
             @type: string
             """
-            self.updatedTime = tokens[8]
+            self.updatedTime = tokens[10]
             """
             @ivar: update time of an image
             @type: string
