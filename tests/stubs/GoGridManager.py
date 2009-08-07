@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from random import choice
+from random import choice, randint
 from GoGridClient import GoGridClient
 
 class GGIp:
@@ -97,6 +97,7 @@ class GoGridManager:
         @rtype: L{GGServer<GGServer>}
         @return: a L{GGServer<GGServer>} object representing newely created server
         """
+
 
         return None
 
