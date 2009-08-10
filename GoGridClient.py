@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
 import md5
-import time
-import urllib
+import os
 import os.path
 import sys
+import time
+import urllib
 
 # define exceptions
 class Error403(Exception): pass
@@ -17,24 +18,30 @@ class GoGridClient:
   api_key = None
   secret = None
   
-  def __init__(self, key='', secret=''):
+  def __init__(self, key='', secret='', server=None):
     if key != "":
         self.api_key = key
     if secret != "":
         self.secret = secret
-    
+    if server is not None:
+        self.server = server
+
     # if the options weren't given via constructor, try
     # to read them from file
     if self.api_key is None or self.secret is None:
-        fd = open(os.path.expanduser("~/.ggrc"), 'r')
-        self.api_key, self.secret = fd.readlines()[0].split(":")
+        lines = open(os.path.expanduser("~/.ggrc"), 'r').readlines()
+        self.api_key, self.secret = lines[0].split(":")
+
+    gg_server = os.getenv('GG_SERVER')
+    if gg_server is not None:
+        self.server = gg_server
 
     self.default_params['api_key'] = self.api_key.strip()
     self.default_params['secret'] = self.secret.strip()
   
-  def getRequestURL(self,method,params={}):
+  def getRequestURL(self, method, params={}):
     """ constructs a call url from a given method with params """
-    requestURL = self.server+'/'+method+'?'
+    requestURL = self.server + '/' + method + '?'
     call_params = self.default_params.copy()
     call_params.update(params)
     call_params['sig'] = self.getSignature(call_params['api_key'],call_params['secret'])
@@ -44,7 +51,7 @@ class GoGridClient:
   
   def getSignature(self,key,secret):
     """ create sig from md5 of key + secret + time """
-    m = md5.new(key+secret+str(int(time.time())))
+    m = md5.new(key + secret + str(int(time.time())))
 
     return m.hexdigest()
         
