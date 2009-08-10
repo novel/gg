@@ -49,16 +49,21 @@ class GoGridClient:
     requestURL += urllib.urlencode(call_params)
     return requestURL
   
-  def getSignature(self,key,secret):
+  def getSignature(self, key, secret):
     """ create sig from md5 of key + secret + time """
     m = md5.new(key + secret + str(int(time.time())))
 
     return m.hexdigest()
         
-  def sendAPIRequest(self,method,params={}):
+  def sendAPIRequest(self, method, params={}):
     """ send a request and return response """
-    url = self.getRequestURL(method,params)
-    f = urllib.urlopen(url)
+    url = self.getRequestURL(method, params)
+    try:
+        f = urllib.urlopen(url)
+    except IOError, err:
+        print "%s: %s" % (self.server, err.strerror[1])
+        sys.exit(1)
+
     result = f.read()
 
     if "403 Not Authorized" in result:
