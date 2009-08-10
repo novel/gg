@@ -66,6 +66,9 @@ class GoGridClient:
 
     result = f.read()
 
+    if os.getenv("GG_DEBUG") is not None:
+        print result
+
     if "403 Not Authorized" in result:
         raise Error403, "Authorization error, check credentials and your time settings."
 
