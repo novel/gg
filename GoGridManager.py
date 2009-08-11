@@ -48,37 +48,37 @@ class GGIp:
     @contact: bogorodskiy@gmail.com
     """
 
-    def __init__(self, tokens):
-        """
-        Constructor.
-
-        @type tokens: string
-        @param tokens: comma-separated list of items as recieved from GoGrid API response
-
-        @note: you most likely don't want to construct GGIp objects yourself, normally they will
-        be returned by various methods from L{GoGridManager<GoGridManager>}.
-        """
-
-        self.id = tokens[0]
-        """
-        @ivar: internal id of the IP address
-        @type: string
-        """
-        self.ip = tokens[1]
-        """
-        @ivar: actuall IP address in dot-decimal notation (192.168.0.1 for example)
-        @type: string
-        """
-        self.subnet = tokens[2]
-        """
-        @ivar: subnet given IP address belongs to
-        @type: string
-        """
-        self.public = (tokens[3] == "true")
-        """
-        @ivar: true if the address is public, false in case if it's from private network
-        @type: boolean
-        """
+#    def __init__(self, tokens):
+#        """
+#        Constructor.
+#
+#        @type tokens: string
+#        @param tokens: comma-separated list of items as recieved from GoGrid API response
+#
+#        @note: you most likely don't want to construct GGIp objects yourself, normally they will
+#        be returned by various methods from L{GoGridManager<GoGridManager>}.
+#        """
+#
+#        self.id = tokens[0]
+#        """
+#        @ivar: internal id of the IP address
+#        @type: string
+#        """
+#        self.ip = tokens[1]
+#        """
+#        @ivar: actuall IP address in dot-decimal notation (192.168.0.1 for example)
+#        @type: string
+#        """
+#        self.subnet = tokens[2]
+#        """
+#        @ivar: subnet given IP address belongs to
+#        @type: string
+#        """
+#        self.public = (tokens[3] == "true")
+#        """
+#        @ivar: true if the address is public, false in case if it's from private network
+#        @type: boolean
+#        """
 
     #def __init__(self, id, ip, subnet, public):
     #    self.id = id
@@ -286,10 +286,16 @@ class GoGridManager:
 
         data = self.gogrid_client.sendAPIRequest("grid/ip/list", param_dict)
 
-        data = data.splitlines()
-        del data[0:2]
+        doc = xml.dom.minidom.parseString(data)
 
-        return map(lambda item: GGIp(item.split(",")), data)
+        ips = []
+        object_nodes = doc.getElementsByTagName("object")
+
+        for obj in object_nodes:
+            if "ip" == obj.getAttribute("name"):
+                ips.append(self._parse_ip_object(obj))
+
+        return ips
 
     def get_servers(self):
         """
@@ -484,4 +490,24 @@ class GoGridManager:
                         setattr(image, boolean_mappings[name], value == "true")
 
         return image
+
+    def _parse_ip_object(self, object):
+        ip = GGIp()
+
+        fields = ['id', 'ip', 'subnet']
+        boolean_fields = ['public']
+
+        for child in object.childNodes:
+            if child.ELEMENT_NODE == child.nodeType:
+                if "attribute" == child.nodeName:
+                    name, value = child.getAttribute("name"), self._get_text(child)
+
+                    if name in fields:
+                        setattr(ip, name, value)
+                    elif name in boolean_fields:
+                        setattr(ip, name, value == "true")
+
+        return ip
+
+
             
