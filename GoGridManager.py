@@ -94,47 +94,47 @@ class GGServer:
     Class representing GoGrid server instance.
     """
 
-    def __init__(self, tokens):
-        """
-        Constructor.
-
-        @type tokens: string
-        @param tokens: comma-separated list of items as recieved from GoGrid API response
-        
-        @note: you most likely don't want to construct GGServer objects yourself, normally they will
-        be returned by various methods from L{GoGridManager<GoGridManager>}.
-        """
-
-        self.id = tokens[0]
-        """
-        @ivar: id of the server
-        @type: string
-        """
-        self.name = tokens[1]
-        """
-        @ivar: name of the server
-        @type: string
-        """
-        self.descr = tokens[2]
-        """
-        @ivar: user's description of the server, might be blank
-        @type: string
-        """
-        self.ip = GGIp([tokens[3], tokens[4], tokens[5], tokens[6]])
-        """
-        @ivar: address information for the server
-        @type: L{GGIp<GGIp>}
-        """
-        self.state = tokens[22]
-        """
-        @ivar: name of the current server state. 
-
-        You can get a list of possible values using gg-lookup tool::
-
-            gg-lookup server.state
-
-        @type: string
-        """ 
+#    def __init__(self, tokens):
+#        """
+#        Constructor.
+#
+#        @type tokens: string
+#        @param tokens: comma-separated list of items as recieved from GoGrid API response
+#        
+#        @note: you most likely don't want to construct GGServer objects yourself, normally they will
+#        be returned by various methods from L{GoGridManager<GoGridManager>}.
+#        """
+#
+#        self.id = tokens[0]
+#        """
+#        @ivar: id of the server
+#        @type: string
+#        """
+#        self.name = tokens[1]
+#        """
+#        @ivar: name of the server
+#        @type: string
+#        """
+#        self.descr = tokens[2]
+#        """
+#        @ivar: user's description of the server, might be blank
+#        @type: string
+#        """
+#        self.ip = GGIp([tokens[3], tokens[4], tokens[5], tokens[6]])
+#        """
+#        @ivar: address information for the server
+#        @type: L{GGIp<GGIp>}
+#        """
+#        self.state = tokens[22]
+#        """
+#        @ivar: name of the current server state. 
+#
+#        You can get a list of possible values using gg-lookup tool::
+#
+#            gg-lookup server.state
+#
+#        @type: string
+#        """ 
 
     def __str__(self):
         return "server %s (id = %s, descr = %s, state = %s, ip = %s)" % (self.name, 
@@ -309,12 +309,16 @@ class GoGridManager:
 
         data = self.gogrid_client.sendAPIRequest("grid/server/list", param_dict)
 
-        print data
-        #data = data.splitlines()
-        #del data[0:2]
+        doc = xml.dom.minidom.parseString(data)
 
-        return []
-        #return map(lambda item: GGServer(item.split(",")), data)
+        servers = []
+        object_nodes = doc.getElementsByTagName("object")
+
+        for obj in object_nodes:
+            if "server" == obj.getAttribute("name"):
+                servers.append(self._parse_server_object(obj))
+
+        return servers
 
     def get_images(self):
         """
@@ -509,5 +513,29 @@ class GoGridManager:
 
         return ip
 
+    def _parse_server_object(self, object):
+        server = GGServer()
 
-            
+        mappings = {'id': 'id',
+                'name': 'name',
+                'description': 'desc'}
+
+        for child in object.childNodes:
+            if child.ELEMENT_NODE == child.nodeType:
+                if "attribute" == child.nodeName:
+                    #name, value = child.getAttribute("name"), self._get_text(child)
+                    name = child.getAttribute("name")
+
+                    if name in mappings:
+                        setattr(server, mappings[name], self._get_text(child))
+                    elif "ip" == name:
+                        server.ip = self._parse_ip_object(child.childNodes[0])
+                    elif "image" == name:
+                        server.image = self._parse_serverimage_object(child.childNodes[0])
+                    elif "state" == name:
+                         for grandchild in child.childNodes[0].childNodes:
+                             if "attribute" == grandchild.nodeName:
+                                 if "name" == grandchild.getAttribute("name"):
+                                     server.state = self._get_text(grandchild)
+                    
+        return server
