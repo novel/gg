@@ -380,7 +380,7 @@ class GoGridManager:
         if descr is not None:
             param_dict["description"] = descr
 
-        response = self.gogrid_client.sendAPIRequest("grid/server/add", param_dict).splitlines()
+        response = self.gogrid_client.sendAPIRequest("grid/server/add", param_dict)
 
         doc = xml.dom.minidom.parseString(response)
         
