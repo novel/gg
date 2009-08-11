@@ -5,7 +5,7 @@ except ImportError:
 
 setup(
         name = "gg",
-        version = "0.1.2",
+        version = "0.2.0",
         author = "Roman Bogorodskiy",
         author_email = "rbogorodskiy@griddynamics.com",
         url="http://github.com/novel/gg/tree",
