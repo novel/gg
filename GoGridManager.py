@@ -521,6 +521,7 @@ class GoGridManager:
         mappings = {'id': 'id',
                 'name': 'name',
                 'description': 'desc'}
+        boolean_mappings = {'isSandbox': 'isSandbox'}
 
         for child in object.childNodes:
             if child.ELEMENT_NODE == child.nodeType:
@@ -529,6 +530,9 @@ class GoGridManager:
 
                     if name in mappings:
                         setattr(server, mappings[name], self._get_text(child))
+                    elif name in boolean_mappings:
+                        setattr(server, boolean_mappings[name], 
+                                "true" == self._get_text(child))
                     elif "ip" == name:
                         server.ip = self._parse_ip_object(child.childNodes[0])
                     elif "image" == name:
