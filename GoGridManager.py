@@ -485,9 +485,6 @@ class GoGridManager:
             if child.ELEMENT_NODE == child.nodeType:
                 if "attribute" == child.nodeName:
                     name, value = child.getAttribute("name"), self._get_text(child)
-                    #print "%s: %s" % (name, value)
-                    #print child.getAttribute("name")
-                    #print self._get_text(child)
 
                     if name in mappings:
                         setattr(image, mappings[name], value)
@@ -524,7 +521,6 @@ class GoGridManager:
         for child in object.childNodes:
             if child.ELEMENT_NODE == child.nodeType:
                 if "attribute" == child.nodeName:
-                    #name, value = child.getAttribute("name"), self._get_text(child)
                     name = child.getAttribute("name")
 
                     if name in mappings:
