@@ -48,37 +48,37 @@ class GGIp:
     @contact: bogorodskiy@gmail.com
     """
 
-#    def __init__(self, tokens):
-#        """
-#        Constructor.
-#
-#        @type tokens: string
-#        @param tokens: comma-separated list of items as recieved from GoGrid API response
-#
-#        @note: you most likely don't want to construct GGIp objects yourself, normally they will
-#        be returned by various methods from L{GoGridManager<GoGridManager>}.
-#        """
-#
-#        self.id = tokens[0]
-#        """
-#        @ivar: internal id of the IP address
-#        @type: string
-#        """
-#        self.ip = tokens[1]
-#        """
-#        @ivar: actuall IP address in dot-decimal notation (192.168.0.1 for example)
-#        @type: string
-#        """
-#        self.subnet = tokens[2]
-#        """
-#        @ivar: subnet given IP address belongs to
-#        @type: string
-#        """
-#        self.public = (tokens[3] == "true")
-#        """
-#        @ivar: true if the address is public, false in case if it's from private network
-#        @type: boolean
-#        """
+    def __init__(self):
+        """
+        Constructor.
+
+        @type tokens: string
+        @param tokens: comma-separated list of items as recieved from GoGrid API response
+
+        @note: you most likely don't want to construct GGIp objects yourself, normally they will
+        be returned by various methods from L{GoGridManager<GoGridManager>}.
+        """
+
+        self.id = ''
+        """
+        @ivar: internal id of the IP address
+        @type: string
+        """
+        self.ip = ''
+        """
+        @ivar: actuall IP address in dot-decimal notation (192.168.0.1 for example)
+        @type: string
+        """
+        self.subnet = ''
+        """
+        @ivar: subnet given IP address belongs to
+        @type: string
+        """
+        self.public = ''
+        """
+        @ivar: true if the address is public, false in case if it's from private network
+        @type: boolean
+        """
 
     #def __init__(self, id, ip, subnet, public):
     #    self.id = id
@@ -94,47 +94,47 @@ class GGServer:
     Class representing GoGrid server instance.
     """
 
-#    def __init__(self, tokens):
-#        """
-#        Constructor.
-#
-#        @type tokens: string
-#        @param tokens: comma-separated list of items as recieved from GoGrid API response
-#        
-#        @note: you most likely don't want to construct GGServer objects yourself, normally they will
-#        be returned by various methods from L{GoGridManager<GoGridManager>}.
-#        """
-#
-#        self.id = tokens[0]
-#        """
-#        @ivar: id of the server
-#        @type: string
-#        """
-#        self.name = tokens[1]
-#        """
-#        @ivar: name of the server
-#        @type: string
-#        """
-#        self.descr = tokens[2]
-#        """
-#        @ivar: user's description of the server, might be blank
-#        @type: string
-#        """
-#        self.ip = GGIp([tokens[3], tokens[4], tokens[5], tokens[6]])
-#        """
-#        @ivar: address information for the server
-#        @type: L{GGIp<GGIp>}
-#        """
-#        self.state = tokens[22]
-#        """
-#        @ivar: name of the current server state. 
-#
-#        You can get a list of possible values using gg-lookup tool::
-#
-#            gg-lookup server.state
-#
-#        @type: string
-#        """ 
+    def __init__(self):
+        """
+        Constructor.
+
+        @type tokens: string
+        @param tokens: comma-separated list of items as recieved from GoGrid API response
+        
+        @note: you most likely don't want to construct GGServer objects yourself, normally they will
+        be returned by various methods from L{GoGridManager<GoGridManager>}.
+        """
+
+        self.id = ''
+        """
+        @ivar: id of the server
+        @type: string
+        """
+        self.name = ''
+        """
+        @ivar: name of the server
+        @type: string
+        """
+        self.descr = ''
+        """
+        @ivar: user's description of the server, might be blank
+        @type: string
+        """
+        self.ip = GGIp()
+        """
+        @ivar: address information for the server
+        @type: L{GGIp<GGIp>}
+        """
+        self.state = ''
+        """
+        @ivar: name of the current server state. 
+
+        You can get a list of possible values using gg-lookup tool::
+
+            gg-lookup server.state
+
+        @type: string
+        """ 
 
     def __str__(self):
         return "server %s (id = %s, descr = %s, state = %s, ip = %s)" % (self.name, 
@@ -214,27 +214,27 @@ class GGImage:
 class GGPassword:
     "Class representing password instance."
 
-    def __init__(self, tokens):
-        self.id = tokens[0]
-        """
-        @ivar: internal numeric id of the password object
-        @type: string
-        """
-        self.server = GGServer(tokens[1:])
-        """
-        @ivar: points to the corresponding L{GGServer<GGServer>} object
-        @type: L{GGServer<GGServer>}
-        """
-        self.username = tokens[31]
-        """
-        @ivar: username
-        @type: string
-        """
-        self.password = tokens[32]
-        """
-        @ivar: password
-        @type: string
-        """
+#    def __init__(self, tokens):
+#        self.id = tokens[0]
+#        """
+#        @ivar: internal numeric id of the password object
+#        @type: string
+#        """
+#        self.server = GGServer(tokens[1:])
+#        """
+#        @ivar: points to the corresponding L{GGServer<GGServer>} object
+#        @type: L{GGServer<GGServer>}
+#        """
+#        self.username = tokens[31]
+#        """
+#        @ivar: username
+#        @type: string
+#        """
+#        self.password = tokens[32]
+#        """
+#        @ivar: password
+#        @type: string
+#        """
 
     def __str__(self):
         return "%s:%s@%s (id = %s)" % (self.username, self.password, self.server.ip.ip, self.id)
@@ -254,12 +254,6 @@ class GoGridManager:
         details on obtaining GoGrid API key at the GoGrid wiki.
         """
         self.gogrid_client = GoGridClient(key, secret)
-
-    def find_image_by_name(self, name):
-        """@deprecated: not elegant, use filter on the get_images()"""
-        for image in self.get_image_list():
-            if name == image[1]:
-                return image
 
 ######################
 ######################
@@ -349,10 +343,18 @@ class GoGridManager:
         @rtype: list
         @return: a list of L{GGPassword<GGPassword>} objects containing passwords for the currently running servers
         """
-        data = self.gogrid_client.sendAPIRequest("support/password/list", {}).splitlines()
+        data = self.gogrid_client.sendAPIRequest("support/password/list", {})
 
-        del data[0:2]
-        return map(lambda item: GGPassword(item.split(",")), data)
+        doc = xml.dom.minidom.parseString(data)
+
+        passwords = []
+        object_nodes = doc.getElementsByTagName("object")
+
+        for obj in object_nodes:
+            if "password" == obj.getAttribute("name"):
+                passwords.append(self._parse_password_object(obj))
+
+        return passwords
 
     def add_server(self, name, image, ram, ip, descr=None):
         """
@@ -539,3 +541,26 @@ class GoGridManager:
                                      server.state = self._get_text(grandchild)
                     
         return server
+
+    def _parse_password_object(self, object):
+        password = GGPassword()
+
+        mappings = {'id': 'id',
+                'username': 'username',
+                'password': 'password'}
+
+
+        for child in object.childNodes:
+            if child.ELEMENT_NODE == child.nodeType:
+                name = child.getAttribute("name")
+
+                if name in mappings:
+                    setattr(password, mappings[name], self._get_text(child))
+                elif "server" == name:
+                    password.server = self._parse_server_object(child.childNodes[0])
+
+        if not hasattr(password, 'server'):
+            password.server = GGServer()
+
+        return password
+
