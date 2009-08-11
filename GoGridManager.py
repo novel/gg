@@ -356,7 +356,7 @@ class GoGridManager:
 
         return passwords
 
-    def add_server(self, name, image, ram, ip, descr=None):
+    def add_server(self, name, image, ram, ip, descr=None, sandbox=False):
         """
         A method to add a new server.
 
@@ -379,6 +379,10 @@ class GoGridManager:
 
         if descr is not None:
             param_dict["description"] = descr
+        
+        if sandbox:
+            param_dict['isSandbox'] = "true"
+
 
         response = self.gogrid_client.sendAPIRequest("grid/server/add", param_dict)
 
@@ -439,11 +443,11 @@ class GoGridManager:
 
         param_dict["power"] = action
 
-        response = self.gogrid_client.sendAPIRequest("grid/server/power", param_dict).splitlines()
+        response = self.gogrid_client.sendAPIRequest("grid/server/power", param_dict)
 
-        del response[0:2]
-
-        return GGServer(response[0].split(","))
+        doc = xml.dom.minidom.parseString(response)
+        
+        return self._parse_server_object(doc.getElementsByTagName("object")[0])
 
     def get_billing(self):
         """

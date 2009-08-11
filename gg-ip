@@ -32,13 +32,13 @@ if __name__ == "__main__":
     type = "all"
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "a:s:t:v")
+        opts, args = getopt.getopt(sys.argv[1:], "p:s:t:v")
     except getopt.GetoptError, err:
         print str(err)
         sys.exit(2)
 
     for o, a in opts:
-        if o == "-a":
+        if o == "-p":
             account = a
         elif o == "-v":
             verbose = True

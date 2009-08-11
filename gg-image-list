@@ -12,13 +12,13 @@ if __name__ == "__main__":
     account = "default"
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "a:")
+        opts, args = getopt.getopt(sys.argv[1:], "p:")
     except getopt.GetoptError, err:
         print str(err)
         sys.exit(2)
 
     for o, a in opts:
-        if o == "-a":
+        if o == "-p":
             account = a
 
     manager = GoGridManager(account=account)

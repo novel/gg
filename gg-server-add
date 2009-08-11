@@ -24,13 +24,13 @@ if __name__ == "__main__":
     name = image = ram = ip = descr = None
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "a:n:i:r:a:d:")
+        opts, args = getopt.getopt(sys.argv[1:], "n:i:p:r:sa:d:")
     except getopt.GetoptError, err:
         print str(err)
         sys.exit(2)
     
     for o, a in opts:
-        if o == "-a":
+        if o == "-p":
             account = a
         elif o == "-n":
             name = a
