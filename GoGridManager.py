@@ -382,9 +382,9 @@ class GoGridManager:
 
         response = self.gogrid_client.sendAPIRequest("grid/server/add", param_dict).splitlines()
 
-        del response[0:2]
-
-        return GGServer(response[0].split(","))
+        doc = xml.dom.minidom.parseString(response)
+        
+        return self._parse_server_object(doc.getElementsByTagName("object")[0])
 
     def delete_server(self, id, name):
         """
@@ -406,12 +406,11 @@ class GoGridManager:
 
         # XXX to raise an exception if both fields are None
         
-        response = self.gogrid_client.sendAPIRequest("grid/server/delete", param_dict).splitlines()
+        response = self.gogrid_client.sendAPIRequest("grid/server/delete", param_dict)
 
-        del response[0:2]
-
-        return GGServer(response[0].split(","))
-
+        doc = xml.dom.minidom.parseString(response)
+        
+        return self._parse_server_object(doc.getElementsByTagName("object")[0])
 
     def power_server(self, id, name, action):
         """A method to start/stop/reboot server.
