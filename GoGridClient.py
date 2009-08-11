@@ -13,7 +13,7 @@ class GoGridException(Exception): pass
 
 class GoGridClient:
   """gogrid api client"""
-  default_params = {'format':'csv', 'v':'1.0'}
+  default_params = {'format':'xml', 'v':'1.0'}
   server = 'https://api.gogrid.com/api'
   api_key = None
   secret = None

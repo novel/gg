@@ -20,8 +20,9 @@ string in CSV, like all other fields as well.
 @contact: bogorodskiy@gmail.com
 """
 
-from random import choice
 from GoGridClient import GoGridClient
+from random import choice
+import xml.dom.minidom
 
 class GGIp:
     """
@@ -145,7 +146,7 @@ class GGImage:
     with PostgreSQL, etc
     """
 
-    def __init__(self, tokens):
+    def __init__(self):
         """
         Constructor.
 
@@ -155,55 +156,57 @@ class GGImage:
         @note: you most likely don't want to construct GGImage objects yourself, normally they will
         be returned by various methods from L{GoGridManager<GoGridManager>}.
         """
-        if len(tokens) == 11:
-            self.id = tokens[2]
-            """
-            @ivar: internal id of the image
-            @type: string
-            """
-            self.name = tokens[3]
-            """
-            @ivar: name of the image
-            @type: string
-            """
-            self.friendlyName = tokens[4]
-            """
-            @ivar: friendly name of the image
-            @type: string
-            """
-            self.descr = tokens[5]
-            """
-            @ivar: long descriptive name of the image
-            @type: string
-            """
-            self.location = tokens[6]
-            """
-            @ivar: location of the image
-            @type: string
-            """
-            self.isActive = (tokens[7] == "true")
-            """
-            @ivar: true if image is active, false otherwise
-            @type: boolean
-            """
-            self.isPublic = (tokens[8] == "true")
-            """
-            @ivar: true if image is active, false otherwise
-            @type: boolean
-            """
-            self.createdTime = tokens[9]
-            """
-            @ivar: creation time of an image
-            @type: string
-            """
-            self.updatedTime = tokens[10]
-            """
-            @ivar: update time of an image
-            @type: string
-            """
-        else:
-            self.id = tokens[0]
-            self.name = tokens[1]
+
+        pass
+#        if len(tokens) == 11:
+#            self.id = tokens[2]
+#            """
+#            @ivar: internal id of the image
+#            @type: string
+#            """
+#            self.name = tokens[3]
+#            """
+#            @ivar: name of the image
+#            @type: string
+#            """
+#            self.friendlyName = tokens[4]
+#            """
+#            @ivar: friendly name of the image
+#            @type: string
+#            """
+#            self.descr = tokens[5]
+#            """
+#            @ivar: long descriptive name of the image
+#            @type: string
+#            """
+#            self.location = tokens[6]
+#            """
+#            @ivar: location of the image
+#            @type: string
+#            """
+#            self.isActive = (tokens[7] == "true")
+#            """
+#            @ivar: true if image is active, false otherwise
+#            @type: boolean
+#            """
+#            self.isPublic = (tokens[8] == "true")
+#            """
+#            @ivar: true if image is active, false otherwise
+#            @type: boolean
+#            """
+#            self.createdTime = tokens[9]
+#            """
+#            @ivar: creation time of an image
+#            @type: string
+#            """
+#            self.updatedTime = tokens[10]
+#            """
+#            @ivar: update time of an image
+#            @type: string
+#            """
+#        else:
+#            self.id = tokens[0]
+#            self.name = tokens[1]
 
     def __str__(self):
         return "image %s (id = %s)" % (self.name, self.id)
@@ -300,10 +303,12 @@ class GoGridManager:
 
         data = self.gogrid_client.sendAPIRequest("grid/server/list", param_dict)
 
-        data = data.splitlines()
-        del data[0:2]
+        print data
+        #data = data.splitlines()
+        #del data[0:2]
 
-        return map(lambda item: GGServer(item.split(",")), data)
+        return []
+        #return map(lambda item: GGServer(item.split(",")), data)
 
     def get_images(self):
         """
@@ -312,10 +317,20 @@ class GoGridManager:
         @rtype: list
         @return: a list of L{GGImage<GGImage>} objects representing currently available OS templates
         """
-        data = self.gogrid_client.sendAPIRequest("grid/image/list", {}).splitlines()
+        data = self.gogrid_client.sendAPIRequest("grid/image/list", {})
 
-        del data[0:2]
-        return map(lambda item: GGImage(item.split(",")), data)
+        doc = xml.dom.minidom.parseString(data)
+   
+        images = []
+        object_nodes = doc.getElementsByTagName("object")
+
+        for obj in object_nodes:
+            if "serverimage" != obj.getAttribute("name"):
+                continue
+
+            images.append(self._parse_serverimage_object(obj))
+
+        return images
 
     def get_passwords(self):
         """
@@ -434,75 +449,39 @@ class GoGridManager:
 
         return dict(zip(keys, values))
 
-######################
-######################
-    def get_free_public_ips(self):
-        """
-        Returns a list of currenty available public ips
-        """
+    def _get_text(self, object):
+        text = []
+        for child in object.childNodes:
+            if child.TEXT_NODE == child.nodeType:
+                text.append(child.data)
 
-        data = self.gogrid_client.sendAPIRequest("grid/ip/list", 
-                {"format": "csv", "ip.state": "Unassigned",
-                    "ip.type": "Public"})
+        return ''.join(text)
 
-        data = data.splitlines()
-        del data[0:2]
+    def _parse_serverimage_object(self, object):
+        image = GGImage()
+
+        mappings = {'id': 'id',
+                'name': 'name',
+                'friendlyName': 'friendlyName',
+                'description': 'descr',
+                'location': 'location',
+                'createdTime': 'createdTime',
+                'updatedTime': 'updatedTime'}
+        boolean_mappings = {'isActive': 'isActive',
+                'isPublic': 'isPublic'}
+
+        for child in object.childNodes:
+            if child.ELEMENT_NODE == child.nodeType:
+                if "attribute" == child.nodeName:
+                    name, value = child.getAttribute("name"), self._get_text(child)
+                    #print "%s: %s" % (name, value)
+                    #print child.getAttribute("name")
+                    #print self._get_text(child)
+
+                    if name in mappings:
+                        setattr(image, mappings[name], value)
+                    elif name in boolean_mappings:
+                        setattr(image, boolean_mappings[name], value == "true")
+
+        return image
             
-        return map(lambda item: item.split(","), data)   
-
-    def get_free_public_ip(self):
-        ips = self.get_free_public_ips()
-
-        print len(ips)
-
-        return choice(ips)
-
-    def get_server_by_name(self, name):
-#        data = self.gogrid_client.sendAPIRequest("grid/server/get",
-#                {"name": name, "format": "csv"}).splitlines()
-#
-#        del data[0:2]
-#
-#        return map(lambda item: item.split(","), data)[0]
-        servers = self.get_server_list()
-
-        for server in servers:
-            if server[1] == name:
-                return server
-
-    def get_server_by_id(self, id):
-        data = self.gogrid_client.sendAPIRequest("grid/server/get",
-                {"id": id, "format": "xml"})
-        return data
-
-    def get_server_list(self):
-        data = self.gogrid_client.sendAPIRequest("grid/server/list", {"format": "csv"}).splitlines()
-        del data[0:2]
-
-        return map(lambda item: item.split(","), data)
-
-    def get_password_by_ip(self, ip):
-        lines = self.gogrid_client.sendAPIRequest("support/password/list", {'format': 'csv'}).splitlines()
-
-        del lines[0:2]
-
-        for line in lines:
-            chunks = line.split(",")
-            server_ip = chunks[5]
-
-            if ip == server_ip:
-                login = chunks[30]
-                password = chunks[31]
-                return login, password
-
-    def add_public_server(self, name):
-        ip = self.get_free_public_ip()
-        image = self.find_image_by_name("centos51_64_apache")
-        ram = "4GB"
-    
-        print "adding server with ip = %s and image id = %s" % (ip[1], image[0])
-        data = self.gogrid_client.sendAPIRequest("grid/server/add", 
-                {"name": name, "image": image[0], "ram": ram, "ip": ip[1], "format": "csv"}).splitlines()
-
-        del data[0:2]
-        return map(lambda item: item.split(","), data)
