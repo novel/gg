@@ -20,16 +20,19 @@ def usage():
     print
 
 if __name__ == "__main__":
+    account = "default"
     name = image = ram = ip = descr = None
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "n:i:r:a:d:")
+        opts, args = getopt.getopt(sys.argv[1:], "a:n:i:r:a:d:")
     except getopt.GetoptError, err:
         print str(err)
         sys.exit(2)
     
     for o, a in opts:
-        if o == "-n":
+        if o == "-a":
+            account = a
+        elif o == "-n":
             name = a
         elif o == "-i":
             image = a
@@ -40,7 +43,7 @@ if __name__ == "__main__":
         elif o == "-d":
             descr = a
 
-    manager = GoGridManager()
+    manager = GoGridManager(account=account)
 
     if ip is None:
         ip = choice(manager.get_ips(type='Public', state='Unassigned')).ip

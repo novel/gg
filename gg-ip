@@ -26,18 +26,21 @@ from GoGridManager import GoGridManager
 from GoGridClient import Error403
 
 if __name__ == "__main__":
+    account = "default"
     verbose = False
     state = None
     type = "all"
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "s:t:v")
+        opts, args = getopt.getopt(sys.argv[1:], "a:s:t:v")
     except getopt.GetoptError, err:
         print str(err)
         sys.exit(2)
 
     for o, a in opts:
-        if o == "-v":
+        if o == "-a":
+            account = a
+        elif o == "-v":
             verbose = True
         elif o == "-t":
             type = a
@@ -53,7 +56,7 @@ if __name__ == "__main__":
             print "State should be one of: u(nassigned), a(ssigned)"
             sys.exit(2)
 
-    manager = GoGridManager()
+    manager = GoGridManager(account=account)
 
     try:
         if type.startswith("pu"):

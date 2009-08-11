@@ -8,7 +8,7 @@ Example:
      
     ./gg-server-list -H <-- shows a list of servers and appends header to the output
 
-Yeah, that' simple"""
+Yeah, that's simple"""
 
 import sys
 import getopt
@@ -17,19 +17,22 @@ from GoGridManager import GoGridManager
 from GoGridClient import Error403
 
 if __name__ == "__main__":
+    account = "default"
     show_headers = False
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "H")
+        opts, args = getopt.getopt(sys.argv[1:], "a:H")
     except getopt.GetoptError, err:
         print str(err)
         sys.exit(2)
 
     for o, a in opts:
-        if o == "-H":
+        if o == "-a":
+            account = a
+        elif o == "-H":
             show_headers = True
 
-    manager = GoGridManager()
+    manager = GoGridManager(account=account)
 
     try:
         servers = manager.get_servers()

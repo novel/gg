@@ -244,7 +244,7 @@ class GoGridManager:
     The main class to accessing GoGrid API methods.
     """
 
-    def __init__(self, key='', secret=''):
+    def __init__(self, key='', secret='', account="default"):
         """Constructor.
 
         key and secret params are optional. If you will specify both of them, GoGridManager
@@ -253,7 +253,7 @@ class GoGridManager:
         at ~/.ggrc and contains only one line of the format: "api_key:secret". You can get more
         details on obtaining GoGrid API key at the GoGrid wiki.
         """
-        self.gogrid_client = GoGridClient(key, secret)
+        self.gogrid_client = GoGridClient(key, secret, account=account)
 
 ######################
 ######################

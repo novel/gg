@@ -1,3 +1,7 @@
+Version 0.2.0:
+ * Support API v 1.2
+ * Use XML instead of CSV which seems to be more reliable and error-prone
+
 Version 0.1.2:
  * Add support for server deletion by regexp
 

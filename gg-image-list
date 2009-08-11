@@ -2,13 +2,26 @@
 
 """A tool to list available images, doesn't need any arguments"""
 
+import getopt
 import sys
 
 from GoGridManager import GoGridManager
 from GoGridClient import Error403
 
 if __name__ == "__main__":
-    manager = GoGridManager()
+    account = "default"
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "a:")
+    except getopt.GetoptError, err:
+        print str(err)
+        sys.exit(2)
+
+    for o, a in opts:
+        if o == "-a":
+            account = a
+
+    manager = GoGridManager(account=account)
 
     try:
         images = manager.get_images()

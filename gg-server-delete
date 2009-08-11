@@ -31,18 +31,21 @@ def delete_server(manager, id, name):
         sys.exit(1)
 
 if __name__ == "__main__":
+    account = "default"
     id = name = None
     regexp_mode = False
     quiet = False
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "i:n:rq")
+        opts, args = getopt.getopt(sys.argv[1:], "a:i:n:rq")
     except getopt.GetoptError, err:
         print str(err)
         sys.exit(2)
 
     for o, a in opts:
-        if o == "-i":
+        if o == "-a":
+            account = a
+        elif o == "-i":
             id = a
         elif o == "-n":
             name = a
@@ -59,7 +62,7 @@ if __name__ == "__main__":
         print "You can use regex mode only with names"
         sys.exit(1)
 
-    manager = GoGridManager()        
+    manager = GoGridManager(account=account)
 
     if not regexp_mode:
         # if we're not in regexp mode, just delete stuff

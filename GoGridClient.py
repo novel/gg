@@ -6,6 +6,7 @@ import os.path
 import sys
 import time
 import urllib
+import ConfigParser
 
 # define exceptions
 class Error403(Exception): pass
@@ -13,12 +14,12 @@ class GoGridException(Exception): pass
 
 class GoGridClient:
   """gogrid api client"""
-  default_params = {'format':'xml', 'v':'1.0'}
+  default_params = {'format':'xml', 'v':'1.2'}
   server = 'https://api.gogrid.com/api'
   api_key = None
   secret = None
   
-  def __init__(self, key='', secret='', server=None):
+  def __init__(self, key='', secret='', server=None, account="default"):
     if key != "":
         self.api_key = key
     if secret != "":
@@ -29,8 +30,15 @@ class GoGridClient:
     # if the options weren't given via constructor, try
     # to read them from file
     if self.api_key is None or self.secret is None:
-        lines = open(os.path.expanduser("~/.ggrc"), 'r').readlines()
-        self.api_key, self.secret = lines[0].split(":")
+        config = ConfigParser.ConfigParser()
+        config.read(os.path.expanduser("~/.ggrc"))
+
+        if not config.has_section(account):
+            print "No such account '%s' defined in config file!" % account
+            sys.exit(1)
+
+        self.api_key = config.get(account, 'apikey')
+        self.secret = config.get(account, 'secret')
 
     gg_server = os.getenv('GG_SERVER')
     if gg_server is not None:
