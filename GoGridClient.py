@@ -27,6 +27,10 @@ class GoGridClient:
     if server is not None:
         self.server = server
 
+    gg_account = os.getenv('GG_ACCOUNT')
+    if gg_account is not None:
+        account = gg_account
+
     # if the options weren't given via constructor, try
     # to read them from file
     if self.api_key is None or self.secret is None:
