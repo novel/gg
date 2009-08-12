@@ -356,6 +356,30 @@ class GoGridManager:
 
         return passwords
 
+    def save_image(self, name, server, descr=None):
+        """
+        A method to save sendbox image to cloud storage
+        to be able to use it as a server image.
+
+        @type name: string
+        @param name: the friendly name of the  server image to be saved 
+        @type server: instace to be used as an image. You can provide either
+         symbolic name or numeric server id
+        @type descr: string
+        @param descr: optional literal description of the image
+        """
+
+        param_dict = {"friendlyName": name, "server": server}
+
+        if descr is not None:
+            param_dict["description"] = descr
+
+        response = self.gogrid_client.sendAPIRequest("grid/image/save", param_dict)
+
+        doc = xml.dom.minidom.parseString(response)
+
+        return self._parse_serverimage_object(doc.getElementsByTagName("object")[0])
+
     def add_server(self, name, image, ram, ip, descr=None, sandbox=False):
         """
         A method to add a new server.
