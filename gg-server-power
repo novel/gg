@@ -17,13 +17,14 @@ from GoGridManager import GoGridManager
 valid_actions = ["on", "off", "cycle"]
 
 def usage():
-    print "%s [-i id|-n name] [%s]" % (sys.argv[0], "|".join(valid_actions))
+    print "%s [-i id|-n name] [ -p profile ] [%s]" % (sys.argv[0], "|".join(valid_actions))
 
 if __name__ == "__main__":
+    account = "default"
     id = name = None
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "i:n:")
+        opts, args = getopt.getopt(sys.argv[1:], "i:n:p:")
     except getopt.GetoptError, err:
         print str(err)
         sys.exit(2)
@@ -33,12 +34,14 @@ if __name__ == "__main__":
             id = a
         elif o == "-n":
             name = a
+        elif o == "-p":
+            account = a
 
     if (name is None and id is None):
         print "You should specifiy either id or name!"
         sys.exit(1)
 
-    manager = GoGridManager()        
+    manager = GoGridManager(account=account)
 
     if len(args) != 1:
         usage()

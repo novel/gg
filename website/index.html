@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>GG Tools<title>
+    <title>GG Tools</title>
     <link rel="STYLESHEET" type="text/css" href="gg.css" />
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   </head>
@@ -16,6 +16,15 @@
       both CPython and Jython.
      </p>
 
+     <h2>News</h2>
+     <p>Version <b>0.2.0</b> released! Changes:</p>
+  
+     <ul>
+       <li>Support API v 1.2, including MyGSI</li>
+       <li>Use XML instead of CSV which seems to be more reliable and error-prone</li>
+       <li>Support multiple config profiles</li>
+     </ul>
+
      <h2>Download</h2>
      <p>Latest release: <a href="dist/gg-%%VERSION%%.tar.gz">%%VERSION%%</a></p>
 
@@ -30,14 +39,19 @@
      <h2>Configuration</h2>
      <p>All you need to do is to obtain your 
      <a href="http://wiki.gogrid.com/wiki/index.php/API:Anatomy_of_a_GoGrid_API_Call#API_Key">API key</a> 
-     and password and put them in a file <tt>~/.ggrc</tt> in a format <tt>api_key:password</tt>
-     (i.e. separated by &quot;:&quot;).</p>
+     and password and put them in a file <tt>~/.ggrc</tt> in a format:</p>
+
+     <pre>
+     [default]
+     apikey: your_api_key
+     secret: your_secret
+     </pre>
 
      <h2>Usage</h2>
 
      <h3>Server Images</h3>
      <p>In order to get a list of available images use <tt>gg-images-list</tt> tool.
-       It doesn't require you to specify any agruments and is just as simple as that:
+       It doesn't require you to specify any arguments and is just as simple as that:
      </p>
 
      <pre>		
@@ -66,7 +80,7 @@
       omitted as well.</li>
       <li><b>-r</b> - an amount of RAM for the server. Possible values are: <i>512MB</i>, <i>1GB</i>,
        <i>2GB</i>, <i>4GB</i> and <i>8GB</i>. You, however, cannot use 8GB with some images, for example,
-       32-bit images genereally cannot have more than 2Gb of RAM.</li>
+       32-bit images generally cannot have more than 2Gb of RAM.</li>
       <li><b>-a</b> - this is an <i>optional</i> arg allows you to specify an address for a server. If you
       omit it, <tt>gg-server-add</tt> tool will pick a random unassigned public ip. If you need
       to specify address yourself, read further to know how to get a list of available IP addresses.</li>
@@ -97,20 +111,20 @@ id             username             password               server
 
      <h3>Dealing With IP Addresses</h3>
      <p><tt>gg-ip</tt> allows to obtain various information about IPs belonging to your account. Without
-     specifying any argutments, <tt>gg-ip</tt> just print out all the IPs available. However, it supports
+     specifying any arguments, <tt>gg-ip</tt> just print out all the IPs available. However, it supports
      various arguments which allow to perform some queries:</p>
 
      <ul>
        <li><b>-t</b> - type of the IP, can be either <i>pu</i> (for public) or <i>pr</i> (for private)</li>
        <li><b>-s</b> - state of the IP, can be either <i>u</i> (for unassigned) or <i>a</i> (for assigned)</li>
-       <li><b>-v</b> - this key doesn't actually control search results, just makes output more versobe.</i>
+       <li><b>-v</b> - this key doesn't actually control search results, just makes output more verbose.</i>
      </ul>
 
      <p>For example, if you want to list of all free (unassigned) public IPs, you should do:</p>
 
      <pre>gg-ip -t pu -s u</pre>
 
-     <h3>Removing servers</pre>
+     <h3>Removing servers</h3>
      <p>You can remove servers using <tt>gg-server-delete</tt> tool. You can remove it by id:
      </p>
 
@@ -124,10 +138,38 @@ id             username             password               server
 
      <pre>gg-server-delete -rn 'foobar_*'</pre>
 
-     <p>In regex mode, <tt>gg-server-delete</tt> ask confirmtion before deleting servers to
+     <p>In regex mode, <tt>gg-server-delete</tt> asks confirmation before deleting servers to
      make sure you didn't make unexpected errors in regular expressions and don't removing
      something that doesn't need to be removed. However, you can pass <tt>-q</tt> key if it
      annoys you.</p>
+
+     <h3>MyGSI</h3>
+     <p>MyGSI allows to create custom server images. You can get more details on it 
+     <a href="http://wiki.gogrid.com/wiki/index.php/MyGSI">here</a>. The process of creating
+     custom image with gg tools looks this way:<p>
+
+     <p>You need to create a new server which would serve as a basis for new image. You should
+     use <tt>gg-server-add</tt> and pass all the arguments you usually pass to it and in addition
+     pass <tt>-s</tt> argument which would make it a sandbox. Now, when you execute <tt>gg-server-list</tt>,
+     each sandbox will be marked with <tt>&gt;</tt> sign.</p>
+
+     <p>Once the server has provisioned, you can perform all the customizations you need. When done, execute
+     <tt>/root/prep.py</tt> on the server and then on your own box execute:</p>
+
+     <pre>gg-image-save -n my_new_image -s 12345 -d 'some cool image'</pre>
+
+     <p>Where <tt>my_new_image</tt> is the name of your brand new image, <tt>12345</tt> is the id of the server
+     you're using as a basis and <tt>-d</tt> is an optional switch for description of the image.</p>
+
+     <p>Now the new image should be available in <tt>gg-image-list</tt> and you can use it like any other
+     usual image.</p>
+
+     <h3>Multiple Config Profiles</h3>
+     <p>As of version <tt>0.2.0</tt> gg tools support having multiple config profiles. Section 'Configuration'
+     describes how to create 'default' section. You can follow this pattern and add additional sections, like
+     e.g. <tt>myacc2</tt> and when you will need to switch to <tt>myacc2</tt> you will pass <tt>-p myacc2</tt>
+     args to the gg tool you need to use. It should not be hard to guess that section 'default' is
+     used by default.</p>
 
      <h2>API Documentation</h2>
      <p>Python module <a href="docs/%%VERSION%%/">Documentation</a></p>
