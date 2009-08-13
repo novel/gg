@@ -209,7 +209,7 @@ class GGImage:
 #            self.name = tokens[1]
 
     def __str__(self):
-        return "image %s (id = %s)" % (self.name, self.id)
+        return "image %s (id = %s)" % (self.friendlyName, self.id)
 
 class GGPassword:
     "Class representing password instance."
