@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+
+"""A tool to list available images, doesn't need any arguments"""
+
+import getopt
+import sys
+
+from GoGridManager import GoGridManager
+from GoGridClient import Error403
+
+if __name__ == "__main__":
+    account = "default"
+    num_items = 20
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "p:n:")
+    except getopt.GetoptError, err:
+        print str(err)
+        sys.exit(2)
+
+    for o, a in opts:
+        if o == "-p":
+            account = a
+        elif o == "-n":
+            num_items = a
+
+    manager = GoGridManager(account=account)
+
+    if len(args) < 1:
+        # list mode: display list of items
+        try:
+            jobs = manager.get_jobs(num_items=num_items)
+        except (Error403,), e:
+            print e
+            sys.exit(2)
+
+        for job in jobs:
+            print "%s\t%s\t%s" % (job.id, job.descr, job.owner)
+    else:
+        job_id = args[0]
+
+        job = manager.get_job(job_id)
+
+        print "%s\t%s\t%s" % (job.id, job.descr, job.owner)

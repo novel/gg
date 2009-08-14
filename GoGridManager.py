@@ -239,6 +239,17 @@ class GGPassword:
     def __str__(self):
         return "%s:%s@%s (id = %s)" % (self.username, self.password, self.server.ip.ip, self.id)
 
+class GGJob:
+    
+    def __init__(self):
+        pass
+
+class GGJobHistory:
+    id = ''
+    state = ''
+    note = ''
+    updatedon = ''
+
 class GoGridManager:
     """
     The main class to accessing GoGrid API methods.
@@ -355,6 +366,32 @@ class GoGridManager:
                 passwords.append(self._parse_password_object(obj))
 
         return passwords
+
+    def get_job(self, id):
+        """Returns information about single job."""
+
+        data = self.gogrid_client.sendAPIRequest("grid/job/get", {"id": id})
+
+        doc = xml.dom.minidom.parseString(data)
+
+        return self._parse_job_object(doc.getElementsByTagName("object")[0])
+
+    def get_jobs(self, num_items=20):
+        """Returns a list of jobs"""
+
+        data = self.gogrid_client.sendAPIRequest("grid/job/list", 
+            {"num_items": num_items})
+
+        doc = xml.dom.minidom.parseString(data)
+
+        jobs = []
+        object_nodes = doc.getElementsByTagName("object")
+
+        for obj in object_nodes:
+            if "job" == obj.getAttribute("name"):
+                jobs.append(self._parse_job_object(obj))
+
+        return jobs
 
     def save_image(self, name, server, descr=None):
         """
@@ -591,3 +628,27 @@ class GoGridManager:
 
         return password
 
+    def _parse_job_object(self, object):
+        job = GGJob()
+
+        fields = ["id", "owner", "attempts"]
+
+        for child in object.childNodes:
+            if child.ELEMENT_NODE == child.nodeType:
+                if "attribute" == child.nodeName:
+                    name = child.getAttribute("name")
+                    
+                    if name in fields:
+                        setattr(job, name, self._get_text(child))
+                    elif "command" == name:
+                        for grandchild in child.childNodes[0].childNodes:
+                            if "attribute" == grandchild.nodeName:
+                                if "description" == grandchild.getAttribute("name"):
+                                    job.descr = self._get_text(grandchild)
+                    elif "history" == name:
+                        job_history_objects = child.getElementsByTagName("object")
+
+
+        return job
+
+    
