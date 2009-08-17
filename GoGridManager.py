@@ -240,6 +240,7 @@ class GGPassword:
         return "%s:%s@%s (id = %s)" % (self.username, self.password, self.server.ip.ip, self.id)
 
 class GGJob:
+    hist = []
     
     def __init__(self):
         pass
@@ -632,6 +633,10 @@ class GoGridManager:
         job = GGJob()
 
         fields = ["id", "owner", "attempts"]
+        hist_mappings = {"name": "state",
+                "note": "note",
+                "description": "descr",
+                "updatedon": "updatedon"}
 
         for child in object.childNodes:
             if child.ELEMENT_NODE == child.nodeType:
@@ -647,6 +652,37 @@ class GoGridManager:
                                     job.descr = self._get_text(grandchild)
                     elif "history" == name:
                         job_history_objects = child.getElementsByTagName("object")
+
+                        for job_history_obj in job_history_objects:
+                            if "job_history" != job_history_obj.getAttribute("name"):
+                                continue
+
+                            gg_job_history = GGJobHistory()
+
+                            if "job_history" == job_history_obj.getAttribute("name"):
+                                for job_history_child in job_history_obj.childNodes:
+                                    if job_history_child.ELEMENT_NODE == job_history_child.nodeType:
+                                        name = job_history_child.getAttribute("name")
+
+                                        if name in hist_mappings:
+                                            setattr(gg_job_history, hist_mappings[name], 
+                                                    self._get_text(job_history_child))
+                                        elif "state" == name:
+                                            # deeper and deeper
+                                            for state_attr in job_history_child.childNodes[0].childNodes:
+                                                if "attribute" == state_attr.nodeName:
+                                                    #print state_attrs.getAttribute("name")
+                                                    name = state_attr.getAttribute("name")
+                                                    if name in hist_mappings:
+                                                        setattr(gg_job_history, 
+                                                                hist_mappings[name],
+                                                                self._get_text(state_attr))
+
+                            job.hist.append(gg_job_history)
+
+
+
+
 
 
         return job

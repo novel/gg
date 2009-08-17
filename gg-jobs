@@ -2,6 +2,7 @@
 
 """A tool to list available images, doesn't need any arguments"""
 
+from datetime import datetime
 import getopt
 import sys
 
@@ -42,3 +43,8 @@ if __name__ == "__main__":
         job = manager.get_job(job_id)
 
         print "%s\t%s\t%s" % (job.id, job.descr, job.owner)
+        print "Job States:"
+
+        for hist_item in job.hist:
+            print "%12s\t%s" % (hist_item.state, 
+                    str(datetime.fromtimestamp(float(hist_item.updatedon)/1000)))
