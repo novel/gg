@@ -36,7 +36,8 @@ if __name__ == "__main__":
             sys.exit(2)
 
         for job in jobs:
-            print "%s\t%s\t%s" % (job.id, job.descr, job.owner)
+            print "%s\t%s\t%s\t%s" % (job.id, job.descr, 
+                    job.hist[-1].state ,job.owner)
     else:
         job_id = args[0]
 
