@@ -518,13 +518,26 @@ class GoGridManager:
         @rtype: dict
         @return: dict with various billing information
         """
-        response = self.gogrid_client.sendAPIRequest("myaccount/billing/get", {}).splitlines()
+        response = self.gogrid_client.sendAPIRequest("myaccount/billing/get", {})
 
-        del response[0]
-        keys = response[0][2:].split(",")
-        values = response[1].split(",")
+        doc = xml.dom.minidom.parseString(response)
 
-        return dict(zip(keys, values))
+        fields = ["startDate", "endDate", 
+                "memoryAllotment", "memoryInUse", "memoryAccrued",
+                "memoryOverage", "memoryOverageCharge",
+                "transferAllotment", "transferAccrued",
+                "transferOverage", "transferOverageCharge"]
+        result = {}
+
+        for node in doc.getElementsByTagName("object")[0].childNodes:
+            if node.ELEMENT_NODE == node.nodeType:
+                if "attribute" == node.nodeName:
+                    name = node.getAttribute("name")
+                    
+                    if name in fields:
+                        result[name] = self._get_text(node)
+
+        return result
 
     def _get_text(self, object):
         text = []
@@ -680,11 +693,4 @@ class GoGridManager:
 
                             job.hist.append(gg_job_history)
 
-
-
-
-
-
         return job
-
-    
