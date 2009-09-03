@@ -303,6 +303,37 @@ class GoGridManager:
 
         return ips
 
+    def get_server(self, id=None, name=None, server=None):
+        """
+        Returns an information about single server
+
+        @type id: string
+        @param id: You might specify id to search for a server by id
+        @type name: string
+        @param name: You might specify name to search for a server by its name
+        @type server: string
+        @param server: You might specify server to search server by both id or name
+        @rtype: L{GGServer<GGServer>}
+        @return: instace of corresponding L{GGServer<GGServer>}
+        """
+        param_dict = {}
+
+        if id is not None:
+            param_dict["id"] = id
+        elif name is not None:
+            param_dict["name"] = name
+        elif server is not None:
+            param_dict["server"] = server
+
+        if len(param_dict) == 0:
+            raise Exception('At least one of id, name or server should be not None!')
+
+        data = self.gogrid_client.sendAPIRequest("grid/server/get", param_dict)
+
+        doc = xml.dom.minidom.parseString(data)
+    
+        return self._parse_server_object(doc.getElementsByTagName("object")[0])
+
     def get_servers(self):
         """
         Returns a list of servers currently deployed
