@@ -1,3 +1,7 @@
+Version 0.2.1:
+ * New method in GoGridManager - get_server() which returns
+   information about a single server (grid/server/get API call)
+
 Version 0.2.0:
  * Support API v 1.2, including MyGSI
  * Use XML instead of CSV which seems to be more reliable and error-prone
