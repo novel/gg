@@ -30,4 +30,4 @@ if __name__ == "__main__":
         sys.exit(2)
 
     for image in images:
-        print image
+        print image.friendlyName, image.isActive, image.id

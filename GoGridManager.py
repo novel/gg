@@ -449,6 +449,33 @@ class GoGridManager:
 
         return self._parse_serverimage_object(doc.getElementsByTagName("object")[0])
 
+    def delete_image(self, id, name, image):
+        """
+        A method to delete server image.
+
+        @type id: integer
+        @param id: numeric id of the image to remove
+        @type name: string
+        @param name: literal name of the image to remove
+        @type image: string
+        #param image: id or name of the image to be removed (i.e. this value can hold both id or name of the image)
+        @rtype: L{GGServer<GGImage>}
+        @return: a L{GGServer<GGImage>} object corresponding to the deleted server
+        """
+
+        if id is not None:
+            param_dict = {'id': id}
+        elif name is not None:
+            param_dict = {'name': name}
+        else:
+            param_dict = {'image': image}
+
+        response = self.gogrid_client.sendAPIRequest("grid/image/delete", param_dict)
+
+        doc = xml.dom.minidom.parseString(response)
+
+        return self._parse_serverimage_object(doc.getElementsByTagName("object")[0])
+
     def add_server(self, name, image, ram, ip, descr=None, sandbox=False):
         """
         A method to add a new server.
@@ -472,7 +499,7 @@ class GoGridManager:
 
         if descr is not None:
             param_dict["description"] = descr
-        
+
         if sandbox:
             param_dict['isSandbox'] = "true"
 
@@ -480,7 +507,7 @@ class GoGridManager:
         response = self.gogrid_client.sendAPIRequest("grid/server/add", param_dict)
 
         doc = xml.dom.minidom.parseString(response)
-        
+
         return self._parse_server_object(doc.getElementsByTagName("object")[0])
 
     def delete_server(self, id, name):

@@ -50,7 +50,7 @@ class GoGridClient:
 
     self.default_params['api_key'] = self.api_key.strip()
     self.default_params['secret'] = self.secret.strip()
-  
+
   def getRequestURL(self, method, params={}):
     """ constructs a call url from a given method with params """
     requestURL = self.server + '/' + method + '?'
@@ -60,13 +60,13 @@ class GoGridClient:
     del call_params['secret']
     requestURL += urllib.urlencode(call_params)
     return requestURL
-  
+
   def getSignature(self, key, secret):
     """ create sig from md5 of key + secret + time """
     m = md5.new(key + secret + str(int(time.time())))
 
     return m.hexdigest()
-        
+
   def sendAPIRequest(self, method, params={}):
     """ send a request and return response """
     url = self.getRequestURL(method, params)
