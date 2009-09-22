@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""A tool to list available images, doesn't need any arguments"""
+"""A tool to list available images."""
 
 import getopt
 import sys
@@ -10,9 +10,10 @@ from GoGridClient import Error403
 
 if __name__ == "__main__":
     account = "default"
+    show_all = False
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "p:")
+        opts, args = getopt.getopt(sys.argv[1:], "ap:")
     except getopt.GetoptError, err:
         print str(err)
         sys.exit(2)
@@ -20,6 +21,8 @@ if __name__ == "__main__":
     for o, a in opts:
         if o == "-p":
             account = a
+        if o == "-a":
+            show_all = True
 
     manager = GoGridManager(account=account)
 
@@ -29,5 +32,8 @@ if __name__ == "__main__":
         print e
         sys.exit(2)
 
+    if show_all is False:
+        images = filter(lambda x: x.state != "Trash", images)
+
     for image in images:
-        print image.friendlyName, image.isActive, image.id
+        print image

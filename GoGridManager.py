@@ -627,6 +627,11 @@ class GoGridManager:
                         setattr(image, mappings[name], value)
                     elif name in boolean_mappings:
                         setattr(image, boolean_mappings[name], value == "true")
+                    elif "state" == name:
+                        for grandchild in child.childNodes[0].childNodes:
+                             if "attribute" == grandchild.nodeName:
+                                  if "name" == grandchild.getAttribute("name"):
+                                      image.state = self._get_text(grandchild)
 
         return image
 

@@ -14,7 +14,7 @@ class GoGridException(Exception): pass
 
 class GoGridClient:
   """gogrid api client"""
-  default_params = {'format':'xml', 'v':'1.2'}
+  default_params = {'format':'xml', 'v':'1.3'}
   server = 'https://api.gogrid.com/api'
   api_key = None
   secret = None
@@ -79,7 +79,11 @@ class GoGridClient:
     result = f.read()
 
     if os.getenv("GG_DEBUG") is not None:
+        print "=" * 50
+        print url
+        print "=" * 50
         print result
+        print "=" * 50
 
     if "403 Not Authorized" in result:
         raise Error403, "Authorization error, check credentials and your time settings."

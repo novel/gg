@@ -1,6 +1,10 @@
 Version 0.2.1:
  * New method in GoGridManager - get_server() which returns
    information about a single server (grid/server/get API call)
+ * Support 'state' property of the image
+ * New tool: gg-image-delete for removing images
+ * Make gg-image-list tool not show images with state Trash unless
+   '-a' flag was specified
 
 Version 0.2.0:
  * Support API v 1.2, including MyGSI

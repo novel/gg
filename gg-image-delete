@@ -38,4 +38,6 @@ if __name__ == "__main__":
 
     manager = GoGridManager(account=account)
 
-    print manager.delete_image(id, name, None)
+    image = manager.delete_image(id, name, None)
+
+    print image
