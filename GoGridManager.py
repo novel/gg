@@ -357,6 +357,37 @@ class GoGridManager:
 
         return servers
 
+    def get_image(self, id, name=None, image=None):
+        """
+        Returns an information about single image
+
+        @type id: string
+        @param id: You might specify id to search for a image by id
+        @type name: string
+        @param name: You might specify name to search for a image by its name
+        @type server: string
+        @param server: You might specify server to search image by both id or name
+        @rtype: L{GGServer<GGImage>}
+        @return: instace of corresponding L{GGServer<GGImage>}
+        """
+        param_dict = {}
+
+        if id is not None:
+            param_dict["id"] = id
+        elif name is not None:
+            param_dict["name"] = name
+        elif server is not None:
+            param_dict["server"] = server
+
+        if len(param_dict) == 0:
+            raise Exception('At least one of id, name or server should be not None!')
+
+        data = self.gogrid_client.sendAPIRequest("grid/image/get", param_dict)
+
+        doc = xml.dom.minidom.parseString(data)
+    
+        return self._parse_serverimage_object(doc.getElementsByTagName("object")[0])
+
     def get_images(self):
         """
         Returns a list of available server images (i.e. Operating System templates)
