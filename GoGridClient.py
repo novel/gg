@@ -11,6 +11,7 @@ import ConfigParser
 # define exceptions
 class Error403(Exception): pass
 class GoGridException(Exception): pass
+class GoGridIOException(GoGridException): pass
 
 class GoGridClient:
   """gogrid api client"""
@@ -73,8 +74,7 @@ class GoGridClient:
     try:
         f = urllib.urlopen(url)
     except IOError, err:
-        print "%s: %s" % (self.server, err.strerror[1])
-        sys.exit(1)
+        raise GoGridIOException("%s: %s" (self.server, err.strerror[1]))
 
     result = f.read()
 
