@@ -11,7 +11,7 @@ import ConfigParser
 # define exceptions
 class Error403(Exception): pass
 class GoGridException(Exception): pass
-class GoGridIOException(GoGridException): pass
+class GoGridIOException(Exception): pass
 
 class GoGridClient:
   """gogrid api client"""
@@ -74,9 +74,10 @@ class GoGridClient:
     try:
         f = urllib.urlopen(url)
     except IOError, err:
-        raise GoGridIOException("%s: %s" (self.server, err.strerror[1]))
+        raise GoGridIOException(str(err))#"%s: %s" % (self.server, err.strerror[1]))
 
     result = f.read()
+    f.close()
 
     if os.getenv("GG_DEBUG") is not None:
         print "=" * 50
@@ -96,5 +97,4 @@ class GoGridClient:
 if __name__ == "__main__":
     client = GoGridClient()
 
-    # ma   ke some calls
     print client.sendAPIRequest("grid/server/list")
