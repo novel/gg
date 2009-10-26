@@ -6,6 +6,8 @@ import os.path
 import sys
 import time
 import urllib
+import logging
+from xml.dom.minidom import parseString
 import ConfigParser
 
 # define exceptions
@@ -19,7 +21,8 @@ class GoGridClient:
   server = 'https://api.gogrid.com/api'
   api_key = None
   secret = None
-  
+  logging = False
+
   def __init__(self, key='', secret='', server=None, account="default"):
     if key != "":
         self.api_key = key
@@ -51,6 +54,13 @@ class GoGridClient:
 
     self.default_params['api_key'] = self.api_key.strip()
     self.default_params['secret'] = self.secret.strip()
+
+    gg_logging = os.getenv('GG_LOG')
+    if gg_logging is not None:
+        self.logging = True
+        logging.basicConfig(filename=os.path.expanduser("~/.gglog"),
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            level=logging.DEBUG)
 
   def getRequestURL(self, method, params={}):
     """ constructs a call url from a given method with params """
@@ -85,6 +95,10 @@ class GoGridClient:
         print "=" * 50
         print result
         print "=" * 50
+
+    if self.logging is True:
+        output = '\n'.join(["\n", "=" * 50, url, "=" * 50, parseString(result).toprettyxml(), "=" * 50])
+        logging.info(output)
 
     if "403 Not Authorized" in result:
         raise Error403, "Authorization error, check credentials and your time settings."
