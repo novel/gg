@@ -15,9 +15,13 @@ class Error403(Exception): pass
 class GoGridException(Exception): pass
 class GoGridIOException(Exception): pass
 
+# helper functions
+def to_pretty_xml(data):
+    return parseString(data).toprettyxml()
+
 class GoGridClient:
   """gogrid api client"""
-  default_params = {'format':'xml', 'v':'1.3'}
+  default_params = {'format': 'xml', 'v': '1.3'}
   server = 'https://api.gogrid.com/api'
   api_key = None
   secret = None
@@ -93,7 +97,7 @@ class GoGridClient:
         print "=" * 50
         print url
         print "=" * 50
-        print result
+        print to_pretty_xml(result)
         print "=" * 50
 
     if self.logging is True:
