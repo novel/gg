@@ -13,11 +13,46 @@ import ConfigParser
 # define exceptions
 class Error403(Exception): pass
 class GoGridException(Exception): pass
-class GoGridIOException(Exception): pass
+class GoGridIOException(GoGridException): pass
+class GoGridMalformedResponse(GoGridException): pass
 
 # helper functions
+def get_text(object):
+    text = []
+    for child in object.childNodes:
+        if child.TEXT_NODE == child.nodeType:
+            text.append(child.data)
+
+    return ''.join(text)
+
 def to_pretty_xml(data):
     return parseString(data).toprettyxml()
+
+def validate_response(data):
+    doc = parseString(data)
+
+    # check if it's valid XML, since sometimes
+    # gogrid outputs stuff like "<h4>503 blah</h4>"
+    if "gogrid" != doc.documentElement.tagName:
+        raise GoGridMalformedResponse(data)
+
+    # check if operation status is ok 
+    response_obj = doc.getElementsByTagName("response")[0]
+
+    if "failure" == response_obj.getAttribute("status"):
+        attribute_objs = doc.getElementsByTagName("attribute")
+
+        errorcode = ""
+        message = ""
+
+        for attribute_obj in attribute_objs:
+            attribute_name = attribute_obj.getAttribute("name")
+            if "errorcode" == attribute_name:
+                errorcode = get_text(attribute_obj)
+            elif "message" == attribute_name:
+                message = get_text(attribute_obj)
+
+        raise GoGridException("%s: %s" % (errorcode, message))
 
 class GoGridClient:
   """gogrid api client"""
@@ -104,11 +139,7 @@ class GoGridClient:
         output = '\n'.join(["\n", "=" * 50, url, "=" * 50, parseString(result).toprettyxml(), "=" * 50])
         logging.info(output)
 
-    if "403 Not Authorized" in result:
-        raise Error403, "Authorization error, check credentials and your time settings."
-
-    if "FAILURE" in result:
-        raise GoGridException(result.splitlines()[2].replace(",", ": "))
+    validate_response(result)
 
     return result
 
