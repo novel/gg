@@ -1,4 +1,5 @@
 Version 0.2.1:
+ * Improved API exceptions handling
  * New method in GoGridManager - get_server() which returns
    information about a single server (grid/server/get API call)
  * Support 'state' property of the image
