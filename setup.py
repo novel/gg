@@ -13,5 +13,6 @@ setup(
         scripts = ["gg-image-delete", "gg-image-list", "gg-image-save", "gg-ip", "gg-lookup", 
             "gg-password", "gg-raw", "gg-server-add", 
             "gg-server-delete", "gg-server-delete-all", 
-            "gg-server-list", "gg-server-power"]
+            "gg-server-list", "gg-server-power",
+	    "gg-ssh","gg-wait"]
 )
