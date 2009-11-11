@@ -1,0 +1,76 @@
+#!/usr/bin/env python
+
+import sys
+import time
+import getopt
+from GoGridManager import GoGridManager
+
+sleep_interval = 10
+
+valid_states = ["on", "off"]
+
+def usage():
+    print "%s [-v] [-d interval] [-p account] [-i id | -n servername] [on|off]" % sys.argv[0]
+    print "Ex: %s -n server1 on" % sys.argv[0]
+
+
+account = "default"
+id = name = None
+verbose = False
+
+try:
+    opts, args = getopt.getopt(sys.argv[1:], "i:n:p:d:v")
+except getopt.GetoptError, err:
+    print str(err)
+    sys.exit(2)
+
+for o, a in opts:
+    if o == "-i":
+        id = a
+    elif o == "-n":
+        name = a
+    elif o == "-p":
+        account = a
+    elif o == "-d":
+        sleep_interval = int(a)
+    elif o == "-v":
+        verbose = True
+
+if (name is None and id is None):
+    print "You should specifiy either id or name!"
+    usage()
+    sys.exit(1)
+
+gg_manager = GoGridManager(account=account)
+
+if len(args) != 1:
+    usage()
+    sys.exit(2)
+
+waited_state = args[0]
+
+if waited_state not in valid_states:
+    usage()
+    sys.exit(2)
+
+ready = False
+
+t = time
+# loop while server is not ready
+while ready is False:
+    server = gg_manager.get_server(id=id, name=name)
+
+    if server.state.lower() == waited_state:
+        ready = True
+        break
+
+    if verbose: print "%s  State not reached, sleeping..." % t.ctime(t.time())
+    time.sleep(sleep_interval)
+ 
+if (id is not None):
+    nm = id
+if (name is not None):
+    nm = name
+
+if verbose: print "%s  Server %s reached state %s" % (t.ctime(t.time()), nm, waited_state)
+
