@@ -43,7 +43,7 @@ class GGIp:
     create GoGrid servers with the private IP.
 
     Public IPs are just IPs assigned to the servers when they're getting created.
-    
+
     @author: Roman Bogorodskiy
     @contact: bogorodskiy@gmail.com
     """
@@ -100,7 +100,7 @@ class GGServer:
 
         @type tokens: string
         @param tokens: comma-separated list of items as recieved from GoGrid API response
-        
+
         @note: you most likely don't want to construct GGServer objects yourself, normally they will
         be returned by various methods from L{GoGridManager<GoGridManager>}.
         """
@@ -241,7 +241,7 @@ class GGPassword:
 
 class GGJob:
     hist = []
-    
+
     def __init__(self):
         pass
 
@@ -331,7 +331,7 @@ class GoGridManager:
         data = self.gogrid_client.sendAPIRequest("grid/server/get", param_dict)
 
         doc = xml.dom.minidom.parseString(data)
-    
+
         return self._parse_server_object(doc.getElementsByTagName("object")[0])
 
     def get_servers(self):
@@ -385,20 +385,20 @@ class GoGridManager:
         data = self.gogrid_client.sendAPIRequest("grid/image/get", param_dict)
 
         doc = xml.dom.minidom.parseString(data)
-    
+
         return self._parse_serverimage_object(doc.getElementsByTagName("object")[0])
 
     def get_images(self):
         """
         Returns a list of available server images (i.e. Operating System templates)
-        
+
         @rtype: list
         @return: a list of L{GGImage<GGImage>} objects representing currently available OS templates
         """
         data = self.gogrid_client.sendAPIRequest("grid/image/list", {})
 
         doc = xml.dom.minidom.parseString(data)
-   
+
         images = []
         object_nodes = doc.getElementsByTagName("object")
 
@@ -560,11 +560,11 @@ class GoGridManager:
             param_dict = {'name': name} 
 
         # XXX to raise an exception if both fields are None
-        
+
         response = self.gogrid_client.sendAPIRequest("grid/server/delete", param_dict)
 
         doc = xml.dom.minidom.parseString(response)
-        
+
         return self._parse_server_object(doc.getElementsByTagName("object")[0])
 
     def power_server(self, id, name, action):
@@ -583,7 +583,7 @@ class GoGridManager:
             2. "off" - turns server off (not gracefully)
             3. "restart" - reboots server
         @type action: string
-        
+
         @rtype: L{GGServer<GGServer>}
         @return: a L{GGServer<GGServer>} object representing a server operation was pefrormed on
         """
@@ -597,7 +597,7 @@ class GoGridManager:
         response = self.gogrid_client.sendAPIRequest("grid/server/power", param_dict)
 
         doc = xml.dom.minidom.parseString(response)
-        
+
         return self._parse_server_object(doc.getElementsByTagName("object")[0])
 
     def get_billing(self):
@@ -622,7 +622,7 @@ class GoGridManager:
             if node.ELEMENT_NODE == node.nodeType:
                 if "attribute" == node.nodeName:
                     name = node.getAttribute("name")
-                    
+
                     if name in fields:
                         result[name] = self._get_text(node)
 
@@ -711,7 +711,7 @@ class GoGridManager:
                              if "attribute" == grandchild.nodeName:
                                  if "name" == grandchild.getAttribute("name"):
                                      server.state = self._get_text(grandchild)
-                    
+
         return server
 
     def _parse_password_object(self, object):
@@ -749,7 +749,7 @@ class GoGridManager:
             if child.ELEMENT_NODE == child.nodeType:
                 if "attribute" == child.nodeName:
                     name = child.getAttribute("name")
-                    
+
                     if name in fields:
                         setattr(job, name, self._get_text(child))
                     elif "command" == name:
