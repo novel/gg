@@ -20,9 +20,18 @@ string in CSV, like all other fields as well.
 @contact: bogorodskiy@gmail.com
 """
 
-from GoGridClient import GoGridClient
+import re
 from random import choice
 import xml.dom.minidom
+
+from GoGridClient import GoGridClient
+
+def format_object(format, obj):
+    return re.sub("\%(\w+)", 
+            lambda m: "%("+ m.group(0)[1:] + ")s", format) \
+                    % obj.__dict__
+
+    return str(obj)
 
 class GGIp:
     """

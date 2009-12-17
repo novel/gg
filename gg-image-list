@@ -5,20 +5,23 @@
 import getopt
 import sys
 
-from GoGridManager import GoGridManager
+from GoGridManager import GoGridManager, format_object
 from GoGridClient import Error403
 
 if __name__ == "__main__":
     account = "default"
     show_all = False
+    format = "image %friendlyName (id = %id)"
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "ap:")
+        opts, args = getopt.getopt(sys.argv[1:], "af:p:")
     except getopt.GetoptError, err:
         print str(err)
         sys.exit(2)
 
     for o, a in opts:
+        if o == "-f":
+            format = a
         if o == "-p":
             account = a
         if o == "-a":
@@ -36,4 +39,4 @@ if __name__ == "__main__":
         images = filter(lambda x: x.state != "Trash", images)
 
     for image in images:
-        print image
+        print format_object(format, image)
