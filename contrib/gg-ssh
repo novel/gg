@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# script gets ip by servername and connects there at current user (or specified by -l)
+# also removes annoying messages about new hostkey -- they are new very often for fresh virtuals
+
+function usage() {
+  echo "Use: $0 [-r] servername [ ssh-options ] [ -- command [ args ] ]";
+  exit 1;
+}
+
+while [ "${1:0:1}" = "-" ]; do	# while options
+  case "$1" in
+    -r) login=root;;
+  esac
+  shift
+done
+
+server=$1
+[ -n "$server" ] || { usage; }
+shift
+
+
+declare -a opts
+while [ -n "$1" -a "$1" != "--" ]; do	# while options for ssh
+  last=${#opts[@]}
+  opts[$last]=$1
+  shift
+done
+
+if [ "$1" = "--" ]; then
+  shift
+fi
+
+ip=`gg-server-list |awk -v server=$server '$2==server||$2==server"<"{print $3}'`
+
+[ -n "$ip" ] || { echo "No server found: $server"; exit 2; }
+
+if [ "$login" = "root" ]; then
+  #SSHPASS=$(gg-password |awk -v server=$ip '$4==server{print $3}')
+  { gg-password |awk -v server=$ip '$4==server{print $3}'; cat; } \
+  | sshpass ssh -t -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${opts[@]} root@$ip $@
+else
+  ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${opts[@]} $ip $@
+fi
+
