@@ -1,0 +1,22 @@
+{
+  "gogrid": {
+    "servers": [
+      {
+        "ram": "512Mb", 
+        "name": "test%(number)s",
+	"image": 1531,
+	"count": 2
+      }, 
+      {
+        "ram": "512Mb", 
+        "name": "server2",
+	"image": 1531
+      }
+    ]
+  },
+  "auth": {
+    "keys": [
+       "~/.ssh/id_rsa.pub"
+    ]
+  }
+}

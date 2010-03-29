@@ -1,0 +1,100 @@
+#!/usr/bin/env python
+
+__author__ = "Roman Bogorodskiy"
+__email__ = "rbogorodskiy@griddynamics.com"
+
+import getopt
+import simplejson
+import sys
+import os.path
+import time
+from random import choice
+
+import paramiko
+from GoGridManager import GoGridManager
+
+def log(str):
+    sys.stdout.write("%s\n" % str)
+
+def _copy_key(ip, username, password, key):
+    t = paramiko.Transport((ip, 22))
+    t.connect(username=username, password=password)
+    sftp = paramiko.SFTPClient.from_transport(t)
+
+    remote_path = "/root/.ssh/authorized_keys"
+
+    sftp.open(remote_path, 'a').write(open(key).read())
+    sftp.chmod(remote_path, 0600)
+
+    t.close()
+
+def auth_setup(gg_mgr, ips, auth):
+    passwords = filter(lambda x: x.server.ip.ip in ips, gg_mgr.get_passwords())
+
+    for password in passwords:
+        for key in auth["keys"]:
+            try:
+                _copy_key(password.server.ip.ip, password.username, password.password, os.path.expanduser(key))
+            except IOError:
+                sys.stdout.write("Error logging at %s!\n" % password.server.ip.ip)
+            log("%s: key %s added" % (password.server.name, key))
+
+def wait_servers(gg_mgr, ips):
+    ips_to_check = list(ips)
+
+    while len(ips_to_check) > 0:
+        for server in gg_mgr.get_servers():
+            if server.ip.ip in ips_to_check and "On" == server.state:
+                log("%s: up" % server.name)
+                ips_to_check.remove(server.ip.ip)
+
+def create_servers(gg_mgr, servers):
+    servers_to_create = []
+    ips_to_return = []
+
+    for server in servers:
+        if "count" in server:
+            for i in range(1, server["count"] + 1):
+                server_tmp = dict(server)
+                server_tmp["name"] = server["name"] % {"number": i}
+                del server_tmp["count"]
+
+                servers_to_create.append(server_tmp)
+        else:
+            server_tmp = dict(server)
+            servers_to_create.append(server_tmp)
+
+    for server in servers_to_create:
+        server["ip"] = choice(gg_mgr.get_ips(type='Public', state='Unassigned')).ip
+        sys.stdout.write("%s: %s RAM image #%s... " % (server["name"], server["ram"], server["image"]))
+        s = gg_mgr.add_server(server["name"], server["image"], server["ram"], server["ip"])
+        sys.stdout.write("created\n")
+
+        ips_to_return.append(server["ip"])
+
+    return ips_to_return
+
+if __name__ == "__main__":
+    try:
+        filename = sys.argv[1]
+    except IndexError:
+        sys.stdout.write("usage: %s filename\n" % sys.argv[0])
+        sys.exit(0)
+
+    try:
+        schema = simplejson.loads(''.join(open(filename).readlines()))
+    except IOError:
+        sys.stderr.write("Could not open file '%s', aborting\n" % filename)
+        sys.exit(1)
+
+    gg_mgr = GoGridManager(account="default")
+
+    ips = create_servers(gg_mgr, schema["gogrid"]["servers"])
+    wait_servers(gg_mgr, ips)
+
+    time.sleep(60)
+
+    if "auth" in schema:
+        auth_setup(gg_mgr, ips, schema["auth"])
+
+    sys.stdout.write("Complete!\n")
