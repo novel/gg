@@ -16,7 +16,7 @@ from random import choice
 from GoGridManager import GoGridManager
 
 def usage():
-    print "%s -n name -i image -r ram -a ip_addr [ -d descr ]" % sys.argv[0]
+    print "%s -n name -i image -r ram -a ip_addr [ -d descr ] [ -s ]" % sys.argv[0]
     print
 
 if __name__ == "__main__":
