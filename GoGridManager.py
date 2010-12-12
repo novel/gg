@@ -690,6 +690,11 @@ class GoGridManager:
                         setattr(ip, name, value)
                     elif name in boolean_fields:
                         setattr(ip, name, value == "true")
+                    elif "datacenter" == name:
+                        for grandchild in child.childNodes[0].childNodes:
+                            if "attribute" == grandchild.nodeName:
+                                if "name" == grandchild.getAttribute("name"):
+                                    ip.datacenter = self._get_text(grandchild)
 
         return ip
 

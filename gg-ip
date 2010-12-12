@@ -75,16 +75,16 @@ if __name__ == "__main__":
                 state_arg = None
         else:
             state_arg = None
-        
+
         ips = manager.get_ips(type=type_arg, state=state_arg)
-       
+
     except (Error403,), e:
         print e
         sys.exit(1)
 
     if verbose:
-        for ip in ips:        
-            print "%s %s %s" % (ip.id, ip.ip, ip.subnet)
+        for ip in ips:
+            print "%s %s %s %s" % (ip.id, ip.ip, ip.subnet, ip.datacenter)
     else:
         for ip in ips:
             print ip.ip
