@@ -56,7 +56,7 @@ def validate_response(data):
 
 class GoGridClient:
   """gogrid api client"""
-  default_params = {'format': 'xml', 'v': '1.3'}
+  default_params = {'format': 'xml', 'v': '1.6'}
   server = 'https://api.gogrid.com/api'
   api_key = None
   secret = None
