@@ -30,15 +30,18 @@ if __name__ == "__main__":
     verbose = False
     state = None
     type = "all"
+    datacenter = None
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "p:s:t:v")
+        opts, args = getopt.getopt(sys.argv[1:], "d:p:s:t:v")
     except getopt.GetoptError, err:
         print str(err)
         sys.exit(2)
 
     for o, a in opts:
-        if o == "-p":
+        if o == "-d":
+            datacenter = a
+        elif o == "-p":
             account = a
         elif o == "-v":
             verbose = True
@@ -76,7 +79,7 @@ if __name__ == "__main__":
         else:
             state_arg = None
 
-        ips = manager.get_ips(type=type_arg, state=state_arg)
+        ips = manager.get_ips(type=type_arg, state=state_arg, datacenter=datacenter)
 
     except (Error403,), e:
         print e

@@ -279,7 +279,7 @@ class GoGridManager:
 ######################
 ######################
 
-    def get_ips(self, type="all", state=None):
+    def get_ips(self, type="all", state=None, datacenter=None):
         """
         Returns a list of IPs available for the current account.
 
@@ -287,6 +287,8 @@ class GoGridManager:
         @param type: A type of the IP address. Can be "Public", "Private" and "All" which means both private and public are OK
         @type state: string
         @param state: A state of the IP, can be one of "Assigned" or "Unassigned". By default returns all IPs
+        @type datacenter: string
+        @param datacenter: Datacenter you wish to obtain addresses from, by default use all datacenters
         @rtype: list
         @return: a list of L{GGIp<GGIp>} objects matching the query
         """
@@ -296,8 +298,11 @@ class GoGridManager:
         if type != "all":
             param_dict["ip.type"] = type
 
-        if state != None:
+        if state is not None:
             param_dict["ip.state"] = state
+
+        if datacenter is not None:
+            param_dict["datacenter"] = datacenter
 
         data = self.gogrid_client.sendAPIRequest("grid/ip/list", param_dict)
 
