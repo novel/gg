@@ -708,7 +708,7 @@ class GoGridManager:
 
         mappings = {'id': 'id',
                 'name': 'name',
-                'description': 'desc'}
+                'description': 'descr'}
         boolean_mappings = {'isSandbox': 'isSandbox'}
 
         for child in object.childNodes:

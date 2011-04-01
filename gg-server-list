@@ -19,9 +19,10 @@ from GoGridClient import Error403
 if __name__ == "__main__":
     account = "default"
     show_headers = False
+    show_description = False
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "p:H")
+        opts, args = getopt.getopt(sys.argv[1:], "p:Hd")
     except getopt.GetoptError, err:
         print str(err)
         sys.exit(2)
@@ -31,6 +32,8 @@ if __name__ == "__main__":
             account = a
         elif o == "-H":
             show_headers = True
+        elif o == "-d":
+            show_description = True
 
     manager = GoGridManager(account=account)
 
@@ -41,9 +44,17 @@ if __name__ == "__main__":
         sys.exit(2)
 
     if show_headers:
-        print "%6s %12s %20s %10s" % ("id", "name", "ip", "state")
+        if show_description:
+            desc_hdr = 'description'
+        else:
+            desc_hdr = ''
+        print "%6s %12s %20s %10s   %s" % ("id", "name", "ip", "state", desc_hdr)
 
     for server in servers:
         if server.isSandbox:
             server.name += '<'
-        print "%6s %12s %20s %10s" % (server.id, server.name, server.ip.ip, server.state)
+        if show_description:
+            desc = server.descr
+        else:
+            desc = ''
+        print "%6s %12s %20s %10s   %s" % (server.id, server.name, server.ip.ip, server.state, desc)
