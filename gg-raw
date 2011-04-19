@@ -18,7 +18,7 @@ def usage():
 
 if __name__ == "__main__":
     client = GoGridClient()
-   
+
     if len(sys.argv) < 2:
         usage()
         sys.exit(2)
@@ -31,7 +31,4 @@ if __name__ == "__main__":
 
         param_dict[k] = v
 
-#    print request
-#    print param_dict
     print client.sendAPIRequest(request, param_dict)
-
