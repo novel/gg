@@ -8,6 +8,19 @@
 #    ./gg-lookup lookups <-- lists all the lookup variables
 #
 
+if test $# -ne 1; then
+  echo "usage: $0 lookup"
+  echo
+  exit 2;
+fi
+
 gg_home=`dirname $0`
 
-${gg_home}/gg-raw "/common/lookup/list" "lookup=$1"
+xmllint --version > /dev/null 2>&1
+if test $? -eq 0; then
+  filter="xmllint --format -"
+else
+  filter="cat"
+fi
+
+${gg_home}/gg-raw "/common/lookup/list" "lookup=$1"|${filter}
